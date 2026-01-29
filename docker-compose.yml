@@ -1,0 +1,17 @@
+services:
+  app:
+    build: .
+    volumes:
+      - .:/var/www
+    depends_on:
+      - mysql
+      - redis
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: cms_service
+      MYSQL_ROOT_PASSWORD: secret
+
+  redis:
+    image: redis:alpine
