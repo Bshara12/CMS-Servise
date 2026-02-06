@@ -10,4 +10,5 @@ interface ProjectRepositoryInterface
   public function update(Project $project, array $data): Project;
   public function find(Project $project): Project;
   public function all(): \Illuminate\Support\Collection;
+   public function delete(Project $project): void;
 }

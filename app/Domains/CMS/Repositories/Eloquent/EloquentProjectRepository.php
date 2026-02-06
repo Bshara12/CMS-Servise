@@ -25,4 +25,9 @@ class EloquentProjectRepository implements ProjectRepositoryInterface
   {
     return Project::query()->latest()->get();
   }
+
+  public function delete(Project $project): void
+  {
+    $project->delete();
+  }
 }

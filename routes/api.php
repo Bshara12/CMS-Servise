@@ -28,4 +28,5 @@ Route::middleware('resolve.project')->group(function () {
 Route::post('/projects/{project}', [ProjectController::class, 'update']);
 Route::get('/projects/{project}', [ProjectController::class, 'show']);
 Route::get('/projects', [ProjectController::class, 'index']);
+Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
 });

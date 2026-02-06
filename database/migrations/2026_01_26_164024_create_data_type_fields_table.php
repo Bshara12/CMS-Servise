@@ -20,6 +20,14 @@ return new class extends Migration
       $table->boolean('translatable')->default(false);
       $table->json('validation_rules')->nullable();
       $table->integer('sort_order')->default(0);
+      $table->string('relation_target')->nullable();
+      // slug تبع data_type الهدف (category, product, etc)
+
+      $table->string('relation_type')->nullable();
+      // one_to_one | one_to_many | many_to_many (مستقبلاً)
+
+      $table->boolean('multiple')->default(false);
+      // هل القيمة array ولا single id
       $table->timestamps();
     });
   }

@@ -51,4 +51,14 @@ class ProjectController extends Controller
 
     return response()->json($projects);
   }
+  public function destroy(
+    Project $project,
+    ProjectService $service
+  ) {
+    $service->delete($project);
+
+    return response()->json([
+      'message' => 'Project deleted successfully'
+    ], 200);
+  }
 }
