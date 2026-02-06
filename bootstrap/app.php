@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Project;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,4 +21,11 @@ return Application::configure(basePath: dirname(__DIR__))
   })
   ->withExceptions(function (Exceptions $exceptions): void {
     //
+    $exceptions->render(function (ModelNotFoundException $e) {
+      if ($e->getModel() === Project::class) {
+        return response()->json([
+          'message' => 'Project not found'
+        ], 404);
+      }
+    });
   })->create();

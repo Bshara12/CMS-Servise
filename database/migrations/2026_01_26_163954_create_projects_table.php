@@ -17,6 +17,7 @@ return new class extends Migration
       $table->foreignId('owner_id')->constrained('users'); 
       $table->json('supported_languages')->nullable();
       $table->json('enabled_modules')->nullable();
+      $table->softDeletes();
       $table->timestamps();
     });
   }

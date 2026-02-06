@@ -35,4 +35,11 @@ Route::middleware('resolve.project')->prefix('cms')->group(function () {
   Route::get('/data-types', [DataTypeController::class, 'index']);
   Route::post('/data-types', [DataTypeController::class, 'store']);
   Route::get('/data-types/{slug}', [DataTypeController::class, 'show']);
+
+  
+  // CMS routes لاحقًا
+  Route::post('/projects/{project}', [ProjectController::class, 'update']);
+  Route::get('/projects/{project}', [ProjectController::class, 'show']);
+  Route::get('/projects', [ProjectController::class, 'index']);
+  Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
 });

@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Traits\BelongsToProject as TraitsBelongsToProject;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
+  use SoftDeletes;
   protected $fillable = ['name', 'owner_id', 'supported_languages', 'enabled_modules'];
 
   protected $casts = [
