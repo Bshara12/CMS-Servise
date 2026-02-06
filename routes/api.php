@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\CMS\DataTypeController;
+use App\Http\Controllers\DataTypeController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -35,11 +35,12 @@ Route::middleware('resolve.project')->prefix('cms')->group(function () {
   Route::get('/data-types', [DataTypeController::class, 'index']);
   Route::post('/data-types', [DataTypeController::class, 'store']);
   Route::get('/data-types/{slug}', [DataTypeController::class, 'show']);
+  Route::put('/data-types/{dataType}', [DataTypeController::class, 'update']);
+  Route::delete('/data-types/{dataType}', [DataTypeController::class, 'destroy']);
 
-  
   // CMS routes لاحقًا
-  Route::post('/projects/{project}', [ProjectController::class, 'update']);
-  Route::get('/projects/{project}', [ProjectController::class, 'show']);
-  Route::get('/projects', [ProjectController::class, 'index']);
+  // Route::post('/projects/{project}', [ProjectController::class, 'update']);
+  // Route::get('/projects/{project}', [ProjectController::class, 'show']);
+  // Route::get('/projects', [ProjectController::class, 'index']);
   Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
 });

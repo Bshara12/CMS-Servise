@@ -16,12 +16,9 @@ return new class extends Migration
       $table->foreignId('project_id')->constrained()->cascadeOnDelete();
       $table->string('name');
       $table->string('slug');
-<<<<<<< HEAD
       $table->string('description')->nullable();
-=======
       $table->boolean('is_active')->default(true);
       $table->json('settings')->nullable();
->>>>>>> 822e650043988dd36b016460dba7d17b7acc5591
       $table->timestamps();
       $table->unique(['project_id', 'slug']);
     });

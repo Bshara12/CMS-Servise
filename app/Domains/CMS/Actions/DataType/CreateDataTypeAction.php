@@ -2,9 +2,8 @@
 
 namespace App\Domains\CMS\Actions\DataType;
 
-use App\Domains\CMS\DTOs\CreateDataTypeDTO;
-use App\Domains\CMS\Repositories\DataTypeRepository;
-use App\Domains\CMS\Repositories\DataTypeRepositoryInterface;
+use App\Domains\CMS\DTOs\DataType\CreateDataTypeDTO;
+use App\Domains\CMS\Repositories\Interface\DataTypeRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
 class CreateDataTypeAction

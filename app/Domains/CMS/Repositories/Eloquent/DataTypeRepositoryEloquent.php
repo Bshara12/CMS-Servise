@@ -2,8 +2,9 @@
 
 namespace App\Domains\CMS\Repositories\Eloquent;
 
-use App\Domains\CMS\DTOs\CreateDataTypeDTO;
-use App\Domains\CMS\Repositories\DataTypeRepositoryInterface;
+use App\Domains\CMS\DTOs\DataType\CreateDataTypeDTO;
+use App\Domains\CMS\DTOs\DataType\UpdateDataTypeDTO;
+use App\Domains\CMS\Repositories\Interface\DataTypeRepositoryInterface;
 use App\Models\DataType;
 
 class DataTypeRepositoryEloquent implements DataTypeRepositoryInterface
@@ -15,6 +16,8 @@ class DataTypeRepositoryEloquent implements DataTypeRepositoryInterface
       'name'         => $dto->name,
       'slug'         => $dto->slug,
       'description'  => $dto->description,
+      'is_active'    => $dto->is_active ?? true,
+      'settings'     => $dto->settings ?? []
     ]);
   }
 
@@ -41,5 +44,35 @@ class DataTypeRepositoryEloquent implements DataTypeRepositoryInterface
     return DataType::where('project_id', $projectId)
       ->orderBy('name')
       ->get();
+  }
+
+  public function ensureSlugIsUniqueForUpdate(int $projectId, string $slug, int $ignoreId): void
+  {
+    $exists = DataType::where('project_id', $projectId)
+      ->where('slug', $slug)
+      ->where('id', '!=', $ignoreId)
+      ->exists();
+
+    if ($exists) {
+      abort(422, "Slug '{$slug}' already exists for this project.");
+    }
+  }
+
+  public function update(DataType $dataType, UpdateDataTypeDTO $dto): DataType
+  {
+    $dataType->update([
+      'name'        => $dto->name,
+      'slug'        => $dto->slug,
+      'description' => $dto->description,
+      'is_active'   => $dto->is_active,
+      'settings'    => $dto->settings,
+    ]);
+
+    return $dataType;
+  }
+
+  public function delete(DataType $dataType): void
+  {
+    $dataType->delete();
   }
 }

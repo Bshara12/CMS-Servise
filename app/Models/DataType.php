@@ -11,8 +11,16 @@ class DataType extends Model
     'project_id',
     'name',
     'slug',
-    'description'
+    'description',
+    'is_active',
+    'settings'
   ];
+
+  protected $casts = [
+    'settings' => 'array',
+    'is_active' => 'boolean',
+  ];
+
 
   public function project()
   {

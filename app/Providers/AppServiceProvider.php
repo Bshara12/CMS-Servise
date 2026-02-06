@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Domains\CMS\Repositories\DataEntryRepositoryInterface;
-use App\Domains\CMS\Repositories\DataTypeRepositoryInterface;
+use App\Domains\CMS\Repositories\Interface\DataTypeRepositoryInterface;
 use App\Domains\CMS\Repositories\Eloquent\DataTypeRepositoryEloquent;
 use App\Domains\CMS\Repositories\Eloquent\EloquentDataEntryRepository;
 use App\Domains\CMS\Repositories\Eloquent\EloquentProjectRepository;

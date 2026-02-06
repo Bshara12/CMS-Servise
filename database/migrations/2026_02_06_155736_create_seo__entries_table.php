@@ -13,7 +13,6 @@ return new class extends Migration
   {
     Schema::create('seo__entries', function (Blueprint $table) {
       $table->id();
-      $table->id();
       $table->foreignId('data_entry_id')->constrained()->cascadeOnDelete();
       $table->string('language')->nullable();
 
@@ -21,9 +20,6 @@ return new class extends Migration
       $table->text('meta_description')->nullable();
       $table->string('slug')->nullable();
       $table->string('canonical_url')->nullable();
-
-      $table->timestamps();
-
       $table->unique(['data_entry_id', 'language']);
       $table->timestamps();
     });
