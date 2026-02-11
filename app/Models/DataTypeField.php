@@ -14,14 +14,20 @@ class DataTypeField extends Model
     'required',
     'translatable',
     'validation_rules',
+    'settings',
     'sort_order',
   ];
 
   protected $casts = [
-        'validation_rules' => 'array',
-    ];
+    'validation_rules' => 'array',
+    'settings' => 'array',
+    'required' => 'boolean',
+    'translatable' => 'boolean',
+    'sort_order' => 'integer',
+  ];
 
-    public function dataType() {
-        return $this->belongsTo(DataType::class);
-    }
+  public function dataType()
+  {
+    return $this->belongsTo(DataType::class);
+  }
 }

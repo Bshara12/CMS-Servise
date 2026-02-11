@@ -76,3 +76,85 @@ class DataTypeRepositoryEloquent implements DataTypeRepositoryInterface
     $dataType->delete();
   }
 }
+
+
+
+// class EntryRepositoryEloquent
+// {
+//     public function create(CreateEntryDTO $dto): DataEntry
+//     {
+//         return DataEntry::create([
+//             'data_type_id' => $dto->data_type_id,
+//             'project_id'   => $dto->project_id,
+//             'status'       => $dto->status,
+//             'created_by'   => $dto->created_by,
+//         ]);
+//     }
+
+//     public function storeValues(DataEntry $entry, array $values): void
+//     {
+//         $dataType = DataType::with('fields')->findOrFail($entry->data_type_id);
+
+//         $fieldsByName = $dataType->fields->keyBy('name');
+
+//         foreach ($values as $fieldName => $value) {
+//             /** @var DataTypeField|null $field */
+//             $field = $fieldsByName->get($fieldName);
+
+//             if (!$field) {
+//                 continue;
+//             }
+
+//             if ($field->type === 'relation') {
+//                 // العلاقات تُخزن في data_entry_relations (سيتم التعامل معها في Action)
+//                 continue;
+//             }
+
+//             DataEntryValue::create([
+//                 'data_entry_id'     => $entry->id,
+//                 'data_type_field_id'=> $field->id,
+//                 'language'          => null,
+//                 'value'             => is_array($value) ? json_encode($value) : $value,
+//             ]);
+//         }
+//     }
+
+//     public function storeRelations(DataEntry $entry, array $values): void
+//     {
+//         $dataType = DataType::with('fields')->findOrFail($entry->data_type_id);
+//         $fieldsByName = $dataType->fields->keyBy('name');
+
+//         foreach ($values as $fieldName => $value) {
+//             /** @var DataTypeField|null $field */
+//             $field = $fieldsByName->get($fieldName);
+
+//             if (!$field || $field->type !== 'relation') {
+//                 continue;
+//             }
+
+//             $settings = $field->settings ?? [];
+
+//             if (!isset($settings['data_type_relation_id'])) {
+//                 continue;
+//             }
+
+//             $relationId = $settings['data_type_relation_id'];
+//             $multiple   = $settings['multiple'] ?? false;
+
+//             $ids = $multiple ? (array) $value : [$value];
+
+//             foreach ($ids as $relatedEntryId) {
+//                 if (!$relatedEntryId) {
+//                     continue;
+//                 }
+
+//                 DataEntryRelation::create([
+//                     'data_entry_id'        => $entry->id,
+//                     'related_entry_id'     => $relatedEntryId,
+//                     'data_type_relation_id'=> $relationId,
+//                 ]);
+//             }
+//         }
+//     }
+// }
+

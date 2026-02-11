@@ -36,4 +36,13 @@ class DataType extends Model
   {
     return $this->hasMany(DataEntry::class);
   }
+
+  public function relations()
+  {
+    return $this->hasMany(DataTypeRelation::class);
+  }
+  public function relatedRelations()
+  {
+    return $this->hasMany(DataTypeRelation::class, 'related_data_type_id');
+  }
 }
