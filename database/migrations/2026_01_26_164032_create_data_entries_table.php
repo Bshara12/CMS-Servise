@@ -18,6 +18,8 @@ return new class extends Migration
       $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
       $table->foreignId('created_by')->nullable()->constrained('users');
       $table->softDeletes();
+      $table->timestamp('published_at')->nullable();
+      $table->foreignId('updated_by')->nullable()->constrained('users');
       $table->timestamps();
     });
   }

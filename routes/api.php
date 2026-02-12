@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\DataEntryController;
+use App\Http\Controllers\DataEntryPublishController;
 use App\Http\Controllers\DataTypeController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\ProjectController;
@@ -31,6 +33,7 @@ Route::middleware('resolve.project')->group(function () {
   Route::get('/projects/{project}', [ProjectController::class, 'show']);
   Route::get('/projects', [ProjectController::class, 'index']);
   Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
+
 });
 
 
@@ -66,3 +69,15 @@ Route::middleware('resolve.project')->prefix('cms')->group(function () {
   Route::put('/fields/{field}', [FieldController::class, 'update']);
   Route::delete('/fields/{field}', [FieldController::class, 'destroy']);
 });
+Route::post(
+  '/projects/{project}/data-types/{dataType}/entries',
+  [DataEntryController::class, 'store']
+);
+
+Route::post(
+  '/entries/{entry}/publish',
+  DataEntryPublishController::class
+);
+
+Route::middleware('auth:sanctum')->group(function () {});
+Route::post('/data-entries/{id}', [DataEntryController::class, 'update']);

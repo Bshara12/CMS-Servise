@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class DataEntryValue extends Model
 {
   use SoftDeletes;
+  protected $guarded = [];
+
   public function entry()
   {
     return $this->belongsTo(DataEntry::class, 'data_entry_id');
