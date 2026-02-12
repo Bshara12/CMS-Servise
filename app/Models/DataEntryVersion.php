@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class DataEntryVersion extends Model
 {
-     protected $casts = [
-        'snapshot' => 'array',
-    ];
+  protected $guarded = [];
+  protected $casts = [
+    'snapshot' => 'array',
+  ];
 
-    public function entry() {
-        return $this->belongsTo(DataEntry::class);
-    }
+  public function entry()
+  {
+    return $this->belongsTo(DataEntry::class);
+  }
 }

@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class DataEntryValue extends Model
 {
-      public function entry() {
-        return $this->belongsTo(DataEntry::class, 'data_entry_id');
-    }
+  protected $guarded = [];
+  public function entry()
+  {
+    return $this->belongsTo(DataEntry::class, 'data_entry_id');
+  }
 
-    public function field() {
-        return $this->belongsTo(DataTypeField::class);
-    }
+  public function field()
+  {
+    return $this->belongsTo(DataTypeField::class);
+  }
 }

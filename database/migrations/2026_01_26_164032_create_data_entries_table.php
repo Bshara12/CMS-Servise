@@ -17,6 +17,8 @@ return new class extends Migration
       $table->foreignId('project_id')->constrained()->cascadeOnDelete();
       $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
       $table->foreignId('created_by')->nullable()->constrained('users');
+      $table->timestamp('published_at')->nullable();
+      $table->foreignId('updated_by')->nullable()->constrained('users');
       $table->timestamps();
     });
   }
