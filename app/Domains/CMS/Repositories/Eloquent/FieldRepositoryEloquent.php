@@ -34,33 +34,33 @@ class FieldRepositoryEloquent implements FieldRepositoryInterface
     }
   }
 
-  // public function create(CreateFieldDTO $dto, array $normalizedSettings): DataTypeField
-  // {
-  //   return DataTypeField::create([
-  //     'data_type_id'     => $dto->data_type_id,
-  //     'name'             => $dto->name,
-  //     'type'             => $dto->type,
-  //     'required'         => $dto->required,
-  //     'translatable'     => $dto->translatable,
-  //     'validation_rules' => $dto->validation_rules,
-  //     'settings'         => $normalizedSettings,
-  //     'sort_order'       => $dto->sort_order,
-  //   ]);
-  // }
+  public function create(CreateFieldDTO $dto, array $normalizedSettings): DataTypeField
+  {
+    return DataTypeField::create([
+      'data_type_id'     => $dto->data_type_id,
+      'name'             => $dto->name,
+      'type'             => $dto->type,
+      'required'         => $dto->required,
+      'translatable'     => $dto->translatable,
+      'validation_rules' => $dto->validation_rules,
+      'settings'         => $normalizedSettings,
+      'sort_order'       => $dto->sort_order,
+    ]);
+  }
 
-  // public function update(CreateFieldDTO $dto, DataTypeField $field, array $normalizedSettings): DataTypeField
-  // {
-  //   $field->update([
-  //     'name'             => $dto->name,
-  //     'required'         => $dto->required,
-  //     'translatable' => $dto->translatable,
-  //     'validation_rules' => $dto->validation_rules,
-  //     'settings' => $normalizedSettings,
-  //     'sort_order' => $dto->sort_order,
-  //   ]);
+  public function update(CreateFieldDTO $dto, DataTypeField $field, array $normalizedSettings): DataTypeField
+  {
+    $field->update([
+      'name'             => $dto->name,
+      'required'         => $dto->required,
+      'translatable' => $dto->translatable,
+      'validation_rules' => $dto->validation_rules,
+      'settings' => $normalizedSettings,
+      'sort_order' => $dto->sort_order,
+    ]);
 
-  //   return $field->fresh();
-  // }
+    return $field->fresh();
+  }
 
   public function getByDataType(int $dataTypeId)
   {
