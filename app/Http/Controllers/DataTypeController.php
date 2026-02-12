@@ -63,12 +63,43 @@ class DataTypeController extends Controller
     ]);
   }
 
-  public function destroy(DataType $dataType, DataTypeService $service)
+  public function destroy(DataType $dataType)
   {
-    $service->delete($dataType);
+    $this->service->delete($dataType);
 
     return response()->json([
       'message' => 'DataType deleted successfully'
     ]);
+  }
+
+  public function restore($dataTypeId)
+  {
+    $this->service->restore($dataTypeId);
+
+    return response()->json([
+      'message' => 'DataType restored successfully'
+    ]);
+  }
+
+  public function forceDelete($dataTypeId)
+  {
+    $this->service->forceDelete($dataTypeId);
+
+    return response()->json([
+      'message' => 'DataType force deleted successfully'
+    ]);
+  }
+
+  public function trashed()
+  {
+    $project = app('currentProject');
+    $trashed = $this->service->trashed($project->id);
+
+    if ($trashed->isEmpty()) {
+      return response()->json([
+        'message' => 'No trashed DataTypes found'
+      ], 404);
+    }
+    return response()->json($trashed);
   }
 }

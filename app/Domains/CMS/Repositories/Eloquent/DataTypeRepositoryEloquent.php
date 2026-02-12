@@ -75,6 +75,23 @@ class DataTypeRepositoryEloquent implements DataTypeRepositoryInterface
   {
     $dataType->delete();
   }
+
+  public function restore(int $dataTypeId): void
+  {
+    $dataType = DataType::onlyTrashed()->findOrFail($dataTypeId);
+    $dataType->restore();
+  }
+
+  public function forceDelete(int $dataTypeId): void
+  {
+    $dataType = DataType::findOrFail($dataTypeId);
+    $dataType->forceDelete();
+  }
+
+  public function trashed(int $projectId)
+  {
+    return DataType::onlyTrashed()->where('project_id', $projectId)->get();
+  }
 }
 
 
@@ -157,4 +174,3 @@ class DataTypeRepositoryEloquent implements DataTypeRepositoryInterface
 //         }
 //     }
 // }
-

@@ -21,4 +21,10 @@ interface DataTypeRepositoryInterface
   public function update(DataType $dataType, UpdateDataTypeDTO $dto): DataType;
 
   public function delete(DataType $dataType): void;
+
+  public function restore(int $dataTypeId): void;
+
+  public function forceDelete(int $dataTypeId): void;
+
+  public function trashed(int $projectId);
 }

@@ -4,7 +4,7 @@ namespace App\Domains\CMS\Actions\Field;
 
 use App\Domains\CMS\Actions\Field\CreationStrategy\FieldTypeFactory;
 use App\Domains\CMS\DTOs\Field\CreateFieldDTO;
-use App\Domains\CMS\Repositories\Eloquent\FieldRepositoryEloquent;
+use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
 use App\Models\DataType;
 use App\Models\DataTypeField;
 use App\Models\DataTypeRelation;
@@ -12,7 +12,7 @@ use App\Models\DataTypeRelation;
 class CreateFieldAction
 {
   public function __construct(
-    protected FieldRepositoryEloquent $repository
+    protected FieldRepositoryInterface $repository
   ) {}
 
   public function execute(CreateFieldDTO $dto): DataTypeField
@@ -57,30 +57,3 @@ class CreateFieldAction
     return $relation->id;
   }
 }
-
-
-// class CreateEntryAction
-// {
-//     public function __construct(
-//         protected EntryRepositoryEloquent $repository
-//     ) {}
-
-//     public function execute(CreateEntryDTO $dto): \App\Models\DataEntry
-//     {
-//         // تأكد أن الـ DataType موجود
-//         $dataType = DataType::with('fields')->findOrFail($dto->data_type_id);
-
-//         // ممكن تضيف هنا validation إضافي بناءً على fields + validation_rules
-
-//         // 1) إنشاء الـ Entry
-//         $entry = $this->repository->create($dto);
-
-//         // 2) تخزين القيم العادية
-//         $this->repository->storeValues($entry, $dto->values);
-
-//         // 3) تخزين العلاقات
-//         $this->repository->storeRelations($entry, $dto->values);
-
-//         return $entry;
-//     }
-// }

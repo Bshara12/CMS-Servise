@@ -17,6 +17,7 @@ return new class extends Migration
       $table->foreignId('data_type_field_id')->constrained()->cascadeOnDelete();
       $table->string('language')->nullable();
       $table->longText('value')->nullable();
+      $table->softDeletes();
       $table->timestamps();
 
       // $table->index(['data_entry_id', 'data_type_field_id', 'language']);

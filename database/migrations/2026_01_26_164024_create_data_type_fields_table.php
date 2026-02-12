@@ -21,6 +21,7 @@ return new class extends Migration
       $table->json('validation_rules')->nullable();
       $table->json('settings')->nullable();
       $table->integer('sort_order')->default(0);
+      $table->softDeletes();
       $table->timestamps();
     });
   }
