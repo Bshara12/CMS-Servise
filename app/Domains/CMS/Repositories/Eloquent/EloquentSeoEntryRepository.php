@@ -29,14 +29,7 @@ class EloquentSeoEntryRepository implements SeoEntryRepository
 
     DB::table('seo_entries')->insert($rows);
   }
-  // public function getForEntry(int $entryId): ?array
-  // {
-  //   $row = DB::table('seo_entries')
-  //     ->where('data_entry_id', $entryId)
-  //     ->first();
 
-  //   return $row ? (array) $row : null;
-  // }
   public function getForEntry(int $entryId): array
   {
     return DB::table('seo_entries')

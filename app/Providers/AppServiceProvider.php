@@ -12,7 +12,9 @@ use App\Domains\CMS\Repositories\Eloquent\EloquentProjectRepository;
 use App\Domains\CMS\Repositories\Eloquent\EloquentSeoEntryRepository;
 use App\Domains\CMS\Repositories\Interface\DataEntryValueRepository;
 use App\Domains\CMS\Repositories\Eloquent\DataTypeRepositoryEloquent;
+use App\Domains\CMS\Repositories\Eloquent\EloquentDataEntryRelationRepository;
 use App\Domains\CMS\Repositories\Eloquent\FieldRepositoryEloquent;
+use App\Domains\CMS\Repositories\Interface\DataEntryRelationRepository;
 use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\ProjectRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\SeoEntryRepository;
@@ -57,6 +59,10 @@ class AppServiceProvider extends ServiceProvider
       EloquentDataEntryVersionRepository::class
     );
     $this->app->bind(ProjectRepositoryInterface::class, EloquentProjectRepository::class);
+    $this->app->bind(
+      DataEntryRelationRepository::class,
+      EloquentDataEntryRelationRepository::class
+    );
   }
 
   /**
