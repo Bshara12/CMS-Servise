@@ -4,14 +4,16 @@ namespace App\Providers;
 
 use App\Domains\CMS\Repositories\Interface\DataEntryVersionRepository;
 use App\Domains\CMS\Repositories\Interface\DataEntryRepositoryInterface;
-use App\Domains\CMS\Repositories\DataTypeRepositoryInterface;
+use App\Domains\CMS\Repositories\Interface\DataTypeRepositoryInterface;
 use App\Domains\CMS\Repositories\Eloquent\EloquentDataEntryRepository;
 use App\Domains\CMS\Repositories\Eloquent\EloquentDataEntryValueRepository;
 use App\Domains\CMS\Repositories\Eloquent\EloquentDataEntryVersionRepository;
-use App\Domains\CMS\Repositories\Eloquent\EloquentDataTypeRepository;
 use App\Domains\CMS\Repositories\Eloquent\EloquentProjectRepository;
 use App\Domains\CMS\Repositories\Eloquent\EloquentSeoEntryRepository;
 use App\Domains\CMS\Repositories\Interface\DataEntryValueRepository;
+use App\Domains\CMS\Repositories\Eloquent\DataTypeRepositoryEloquent;
+use App\Domains\CMS\Repositories\Eloquent\FieldRepositoryEloquent;
+use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\ProjectRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\SeoEntryRepository;
 use Illuminate\Support\ServiceProvider;
@@ -24,7 +26,8 @@ class AppServiceProvider extends ServiceProvider
   public function register(): void
   {
     //
-    $this->app->bind(DataTypeRepositoryInterface::class, EloquentDataTypeRepository::class);
+    $this->app->bind(DataTypeRepositoryInterface::class, DataTypeRepositoryEloquent::class);
+    $this->app->bind(FieldRepositoryInterface::class, FieldRepositoryEloquent::class);
     $this->app->bind(DataEntryRepositoryInterface::class, EloquentDataEntryRepository::class);
     $this->app->bind(
       ProjectRepositoryInterface::class,
@@ -53,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
       DataEntryVersionRepository::class,
       EloquentDataEntryVersionRepository::class
     );
+    $this->app->bind(ProjectRepositoryInterface::class, EloquentProjectRepository::class);
   }
 
   /**

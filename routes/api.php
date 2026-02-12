@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\DataEntryController;
 use App\Http\Controllers\DataEntryPublishController;
+use App\Http\Controllers\DataTypeController;
+use App\Http\Controllers\FieldController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +33,20 @@ Route::middleware('resolve.project')->group(function () {
   Route::get('/projects/{project}', [ProjectController::class, 'show']);
   Route::get('/projects', [ProjectController::class, 'index']);
   Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
+
+});
+
+Route::middleware('resolve.project')->prefix('cms')->group(function () {
+  // Data-Types
+  Route::post('/data-types', [DataTypeController::class, 'store']);
+  Route::put('/data-types/{dataType}', [DataTypeController::class, 'update']);
+  Route::get('/data-types', [DataTypeController::class, 'index']);
+  Route::get('/data-types/{slug}', [DataTypeController::class, 'show']);
+  Route::delete('/data-types/{dataType}', [DataTypeController::class, 'destroy']);
+
+  // Data-Type Fields
+  Route::post('/data-types/{dataType}/fields', [FieldController::class, 'store']);
+  Route::put('/fields/{field}', [FieldController::class, 'update']);
 });
 Route::post(
   '/projects/{project}/data-types/{dataType}/entries',

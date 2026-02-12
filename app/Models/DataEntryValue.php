@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class DataEntryValue extends Model
 {
   protected $guarded = [];
+
   public function entry()
   {
     return $this->belongsTo(DataEntry::class, 'data_entry_id');

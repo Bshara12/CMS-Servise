@@ -21,4 +21,10 @@ class DataEntry extends Model
   {
     return $this->hasMany(DataEntryVersion::class);
   }
+
+
+  public function relations()
+  {
+    return $this->hasMany(DataEntryRelation::class);
+  }
 }

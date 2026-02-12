@@ -6,15 +6,43 @@ use Illuminate\Database\Eloquent\Model;
 
 class DataType extends Model
 {
-     public function project() {
-        return $this->belongsTo(Project::class);
-    }
 
-    public function fields() {
-        return $this->hasMany(DataTypeField::class);
-    }
+  protected $fillable = [
+    'project_id',
+    'name',
+    'slug',
+    'description',
+    'is_active',
+    'settings'
+  ];
 
-    public function entries() {
-        return $this->hasMany(DataEntry::class);
-    }
+  protected $casts = [
+    'settings' => 'array',
+    'is_active' => 'boolean',
+  ];
+
+
+  public function project()
+  {
+    return $this->belongsTo(Project::class);
+  }
+
+  public function fields()
+  {
+    return $this->hasMany(DataTypeField::class);
+  }
+
+  public function entries()
+  {
+    return $this->hasMany(DataEntry::class);
+  }
+
+  public function relations()
+  {
+    return $this->hasMany(DataTypeRelation::class);
+  }
+  public function relatedRelations()
+  {
+    return $this->hasMany(DataTypeRelation::class, 'related_data_type_id');
+  }
 }
