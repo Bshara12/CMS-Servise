@@ -3,9 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DataEntry extends Model
 {
+  use SoftDeletes;
+
+  protected $fillable = [
+    'data_type_id',
+    'project_id',
+    'status',
+    'created_by',
+  ];
+
   protected $guarded = [];
   public function dataType()
   {

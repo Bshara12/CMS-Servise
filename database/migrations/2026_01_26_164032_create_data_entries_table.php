@@ -22,6 +22,7 @@ return new class extends Migration
       $table->timestamp('scheduled_at')->nullable();
 
       $table->foreignId('created_by')->nullable()->constrained('users');
+      $table->softDeletes();
       $table->timestamp('published_at')->nullable();
       $table->foreignId('updated_by')->nullable()->constrained('users');
       $table->timestamps();

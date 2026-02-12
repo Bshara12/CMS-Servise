@@ -19,6 +19,7 @@ return new class extends Migration
       $table->string('description')->nullable();
       $table->boolean('is_active')->default(true);
       $table->json('settings')->nullable();
+      $table->softDeletes();
       $table->timestamps();
       $table->unique(['project_id', 'slug']);
     });

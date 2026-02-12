@@ -4,13 +4,13 @@ namespace App\Domains\CMS\Actions\Field;
 
 use App\Domains\CMS\Actions\Field\CreationStrategy\FieldTypeFactory;
 use App\Domains\CMS\DTOs\Field\CreateFieldDTO;
-use App\Domains\CMS\Repositories\Eloquent\FieldRepositoryEloquent;
+use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
 use App\Models\DataTypeField;
 
 class UpdateFieldAction
 {
   public function __construct(
-    protected FieldRepositoryEloquent $repository,
+    protected FieldRepositoryInterface $repository,
     protected CreateFieldAction $createFieldAction
   ) {}
 

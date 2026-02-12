@@ -36,17 +36,38 @@ Route::middleware('resolve.project')->group(function () {
 
 });
 
+
 Route::middleware('resolve.project')->prefix('cms')->group(function () {
-  // Data-Types
+
+  // -------------------------
+  // Data Types
+  // -------------------------
+  // static
+  Route::get('/data-types/trashed', [DataTypeController::class, 'trashed']);
+  Route::post('/data-types/{id}/restore', [DataTypeController::class, 'restore']);
+  Route::delete('/data-types/{id}/force-delete', [DataTypeController::class, 'forceDelete']);
+
+  // CRUD
   Route::post('/data-types', [DataTypeController::class, 'store']);
-  Route::put('/data-types/{dataType}', [DataTypeController::class, 'update']);
   Route::get('/data-types', [DataTypeController::class, 'index']);
   Route::get('/data-types/{slug}', [DataTypeController::class, 'show']);
+  Route::put('/data-types/{dataType}', [DataTypeController::class, 'update']);
   Route::delete('/data-types/{dataType}', [DataTypeController::class, 'destroy']);
 
-  // Data-Type Fields
+
+  // -------------------------
+  // Fields
+  // -------------------------
+  // static
+  Route::get('/data-types/{dataType}/fields/trashed', [FieldController::class, 'trashed']);
+  Route::post('/fields/{id}/restore', [FieldController::class, 'restore']);
+  Route::delete('/fields/{id}/force-delete', [FieldController::class, 'forceDelete']);
+
+  // CRUD
   Route::post('/data-types/{dataType}/fields', [FieldController::class, 'store']);
+  Route::get('/data-types/{dataType}/fields', [FieldController::class, 'index']);
   Route::put('/fields/{field}', [FieldController::class, 'update']);
+  Route::delete('/fields/{field}', [FieldController::class, 'destroy']);
 });
 Route::post(
   '/projects/{project}/data-types/{dataType}/entries',

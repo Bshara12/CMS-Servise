@@ -7,6 +7,9 @@ use App\Domains\CMS\Actions\DataType\IndexDataTypeAction;
 use App\Domains\CMS\Actions\DataType\ShowDataTypeAction;
 use App\Domains\CMS\Actions\DataType\UpdateDataTypeAction;
 use App\Domains\CMS\Actions\DataType\DeleteDataTypeAction;
+use App\Domains\CMS\Actions\DataType\ForceDeleteAction;
+use App\Domains\CMS\Actions\DataType\IndexTrashedDataType;
+use App\Domains\CMS\Actions\DataType\RestoreDataTypeAction;
 use App\Domains\CMS\DTOs\DataType\CreateDataTypeDTO;
 use App\Domains\CMS\DTOs\DataType\ShowDataTypeDTOProperities;
 use App\Domains\CMS\DTOs\DataType\UpdateDataTypeDTO;
@@ -21,6 +24,9 @@ class DataTypeService
     protected ShowDataTypeAction $showAction,
     protected UpdateDataTypeAction $updateAction,
     protected DeleteDataTypeAction $deleteAction,
+    protected RestoreDataTypeAction $restoreAction,
+    protected ForceDeleteAction $forceDeleteAction,
+    protected IndexTrashedDataType $indexTrashedAction,
     protected DataTypeRepositoryInterface $repository,
   ) {}
 
@@ -48,5 +54,20 @@ class DataTypeService
   public function delete(DataType $dataType)
   {
     return $this->deleteAction->execute($dataType);
+  }
+
+  public function restore(int $dataTypeId)
+  {
+    return $this->restoreAction->execute($dataTypeId);
+  }
+
+  public function forceDelete(int $dataTypeId)
+  {
+    return $this->forceDeleteAction->execute($dataTypeId);
+  }
+
+  public function trashed(int $projectId)
+  {
+    return $this->indexTrashedAction->execute($projectId);
   }
 }
