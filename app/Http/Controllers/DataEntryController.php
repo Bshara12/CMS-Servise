@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 
 class DataEntryController extends Controller
 {
-
   public function store(
     DataEntryRequest $request,
     CreateDataEntryAction $action,
