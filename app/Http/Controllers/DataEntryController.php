@@ -48,17 +48,17 @@ class DataEntryController extends Controller
       }
     }
 
-    $scheduledAt = $request->input('scheduled_at')
-      ? Carbon::parse($request->input('scheduled_at'))->format('Y-m-d H:i:s')
-      : null;
+    // $scheduledAt = $request->input('scheduled_at')
+    //   ? Carbon::parse($request->input('scheduled_at'))->format('Y-m-d H:i:s')
+    //   : null;
 
-    // $scheduledAt = null;
+    $scheduledAt = null;
 
-    // if ($request->input('status') === 'scheduled') {
-    //   $scheduledAt = Carbon::parse(
-    //     $request->input('scheduled_at')
-    //   )->format('Y-m-d H:i:s');
-    // }
+    if ($request->input('status') === 'scheduled') {
+      $scheduledAt = Carbon::parse(
+        $request->input('scheduled_at')
+      )->format('Y-m-d H:i:s');
+    }
 
     $dto = new CreateDataEntryDto(
       values: $values,
