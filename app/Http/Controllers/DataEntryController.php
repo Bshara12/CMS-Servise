@@ -12,6 +12,7 @@ use App\Domains\CMS\DTOs\Data\UpdateEntryDTO;
 use App\Domains\CMS\Requests\DataEntryRequest;
 use App\Domains\CMS\Requests\UpdateEntryRequest;
 use App\Domains\CMS\Services\FileUploadService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DataEntryController extends Controller
@@ -21,12 +22,14 @@ class DataEntryController extends Controller
     CreateDataEntryAction $action,
     FileUploadService $uploader
   ) {
+
     $values = $request->input('values', []);
     $files = $request->filesInput();
 
     foreach ($files as $fieldId => $langs) {
       foreach ($langs as $lang => $uploadedFiles) {
         foreach ((array) $uploadedFiles as $file) {
+
           $path = $uploader->upload(
             $file,
             $request->projectId(),
@@ -38,16 +41,29 @@ class DataEntryController extends Controller
         }
       }
     }
+    
+$scheduledAt = $request->input('scheduled_at')
+    ? Carbon::parse($request->input('scheduled_at'))->format('Y-m-d H:i:s')
+    : null;
+
+    $dto = new CreateDataEntryDto(
+      values: $values,
+      seo: $request->input('seo'),
+      relations: $request->input('relations'),
+      status: $request->input('status', 'draft'),
+      scheduled_at: $scheduledAt
+    );
 
     $entry = $action->execute(
       projectId: $request->projectId(),
       dataTypeId: $request->dataTypeId(),
-      dto: new CreateDataEntryDto($values, $request->input('seo')),
+      dto: $dto,
       userId: auth()->id()
     );
 
     return response()->json($entry, 201);
   }
+
 
   public function update(
     int $id,

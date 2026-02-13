@@ -10,6 +10,11 @@ interface FieldRepositoryInterface
 {
   public function ensureFieldIsUnique(int $data_type_id, string $name): void;
 
+  // public function create(CreateFieldDTO $dto): DataTypeField;
+
+  // public function update(CreateFieldDTO $dto): DataTypeField;
+
+  public function getByDataType(int $dataTypeId);
   public function ensureUpdatedFieldIsUnique(int $data_type_id, string $name, int $field_id): void;
 
   public function create(CreateFieldDTO $dto, array $normalizedSettings): DataTypeField;

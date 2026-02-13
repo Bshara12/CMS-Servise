@@ -7,8 +7,13 @@ use DomainException;
 
 class PublishedState implements DataEntryState
 {
-    public function publish(DataEntry $entry): void
-    {
-        throw new DomainException('Entry already published');
-    }
+  public function publish(DataEntry $entry): void
+  {
+    throw new \Exception("Already published.");
+  }
+
+  public function schedule(DataEntry $entry, string $date): void
+  {
+    throw new \Exception("Cannot schedule a published entry.");
+  }
 }

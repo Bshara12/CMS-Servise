@@ -8,30 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class EloquentDataEntryValueRepository implements DataEntryValueRepository
 {
-  // public function bulkInsert(
-  //   int $entryId,
-  //   int $dataTypeId,
-  //   array $values
-  // ): void {
-  //   $rows = [];
-
-  //   foreach ($values as $fieldId => $localizedValues) {
-  //     foreach ($localizedValues as $lang => $value) {
-  //       $rows[] = [
-  //         'data_entry_id' => $entryId,
-  //         'data_type_field_id' => $fieldId,
-  //         'language' => $lang,
-  //         'value' => is_array($value)
-  //           ? json_encode($value)
-  //           : $value,
-  //         'created_at' => now(),
-  //         'updated_at' => now(),
-  //       ];
-  //     }
-  //   }
-
-  //   DB::table('data_entry_values')->insert($rows);
-  // }
 
   public function bulkInsert(
     int $entryId,
@@ -49,8 +25,9 @@ class EloquentDataEntryValueRepository implements DataEntryValueRepository
 
     foreach ($values as $fieldSlug => $langs) {
       if (!isset($fields[$fieldSlug])) {
-        continue; // أو throw exception
+        throw new \Exception("Field {$fieldSlug} does not exist in this data type.");
       }
+
 
       $fieldId = $fields[$fieldSlug]->id;
 

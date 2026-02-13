@@ -6,6 +6,7 @@ use App\Domains\CMS\DTOs\Field\CreateFieldDTO;
 use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
 use App\Models\DataType;
 use App\Models\DataTypeField;
+use Illuminate\Support\Facades\DB;
 
 class FieldRepositoryEloquent implements FieldRepositoryInterface
 {
@@ -59,6 +60,14 @@ class FieldRepositoryEloquent implements FieldRepositoryInterface
     ]);
 
     return $field->fresh();
+  }
+
+  public function getByDataType(int $dataTypeId)
+  {
+    return DB::table('data_type_fields')
+      ->where('data_type_id', $dataTypeId)
+      ->get()
+      ->keyBy('name');
   }
 
   public function list(DataType $dataType)

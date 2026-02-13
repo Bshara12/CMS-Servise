@@ -4,11 +4,14 @@ namespace App\Domains\CMS\Services;
 
 use App\Domains\CMS\DTOs\Data\CreateDataEntryDto;
 use App\Domains\CMS\DTOs\Data\UpdateEntryDTO;
+use App\Domains\CMS\Repositories\Interface\DataEntryRelationRepository;
 use App\Domains\CMS\Repositories\Interface\DataEntryVersionRepository;
 use App\Domains\CMS\Repositories\Interface\DataEntryRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\DataEntryValueRepository;
+use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\SeoEntryRepository;
 use App\Domains\CMS\States\DataEntryStateResolver;
+use App\Domains\CMS\StrategyCheck\FieldValidatorResolver;
 use DomainException;
 use Illuminate\Support\Facades\DB;
 
@@ -20,8 +23,40 @@ class DataEntryService
     private SeoEntryRepository $seo,
     private SeoGeneratorService $seoGenerator,
     private DataEntryVersionRepository $versions,
-    private DataEntryStateResolver $stateResolver
+    private DataEntryStateResolver $stateResolver,
+    private DataEntryRelationRepository $relations,
+    private FieldRepositoryInterface $fieldsRepo,
+    private FieldValidatorResolver $validatorResolver,
+
+
   ) {}
+
+  private function validateFields(
+    int $dataTypeId,
+    array $values,
+    array $files
+  ): void {
+
+    $fields = $this->fieldsRepo->getByDataType($dataTypeId);
+
+    foreach ($fields as $slug => $field) {
+
+      if ($field->required && !isset($values[$slug])) {
+        throw new DomainException("Field {$slug} is required.");
+      }
+
+      if (!isset($values[$slug])) {
+        continue;
+      }
+
+      foreach ($values[$slug] as $lang => $value) {
+
+        $validator = $this->validatorResolver->resolve($field->type);
+
+        $validator->validate($value, (array) $field);
+      }
+    }
+  }
 
   public function create(
     int $projectId,
@@ -35,8 +70,24 @@ class DataEntryService
         'project_id' => $projectId,
         'data_type_id' => $dataTypeId,
         'status' => 'draft',
+        'scheduled_at' => $dto->scheduled_at ?? null,
         'created_by' => $userId, // nullable
       ]);
+      $this->validateFields(
+        $dataTypeId,
+        $dto->values,
+        $dto->files ?? []
+      );
+
+      $state = $this->stateResolver->resolve($entry);
+
+      if ($dto->status === 'published') {
+        $state->publish($entry);
+      }
+
+      if ($dto->status === 'scheduled') {
+        $state->schedule($entry, $dto->scheduled_at);
+      }
 
       $this->values->bulkInsert(
         $entry->id,
@@ -50,38 +101,28 @@ class DataEntryService
         $generatedSeo = $this->seoGenerator->generate($dto->values);
         $this->seo->insertForEntry($entry->id, $generatedSeo);
       }
+      if ($dto->relations) {
+        $this->relations->insertForEntry(
+          $entry->id,
+          $dataTypeId,
+          $projectId,
+          $dto->relations
+        );
+      }
+
+      if ($dto->scheduled_at) {
+        try {
+          $dto->scheduled_at = \Carbon\Carbon::parse($dto->scheduled_at)
+            ->format('Y-m-d H:i:s');
+        } catch (\Exception $e) {
+          throw new DomainException("Invalid scheduled_at format.");
+        }
+      }
 
 
       return $entry;
     });
   }
-
-  public function publish(int $entryId, ?int $userId)
-  {
-    return DB::transaction(function () use ($entryId, $userId) {
-
-      $entry = $this->entries->findOrFail($entryId);
-
-      $state = $this->stateResolver->resolve($entry);
-      $state->publish($entry);
-
-      $snapshot = [
-        'entry' => $entry->toArray(),
-        'values' => $this->values->getForEntry($entry->id),
-        'seo' => $this->seo->getForEntry($entry->id),
-      ];
-
-      $this->versions->create(
-        $entry->id,
-        1,
-        $snapshot,
-        $userId
-      );
-
-      return $entry;
-    });
-  }
-
 
 
 

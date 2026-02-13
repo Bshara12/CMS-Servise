@@ -8,8 +8,17 @@ class DraftState implements DataEntryState
 {
     public function publish(DataEntry $entry): void
     {
-        $entry->status = 'published';
-        $entry->published_at = now();
-        $entry->save();
+        $entry->update([
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+    }
+
+    public function schedule(DataEntry $entry, string $date): void
+    {
+        $entry->update([
+            'status' => 'scheduled',
+            'scheduled_at' => $date,
+        ]);
     }
 }

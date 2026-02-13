@@ -12,17 +12,24 @@ class DataEntryRequest extends FormRequest
     return [
       'values' => ['required', 'array'],
       'seo' => ['nullable', 'array'],
+      'relations' => ['nullable', 'array'],
+      'relations.*.relation_id' => ['required_with:relations', 'integer'],
+      'relations.*.related_entry_ids' => ['required_with:relations', 'array'],
+      'relations.*.related_entry_ids.*' => ['integer'],
       'files' => ['nullable', 'array'],
     ];
   }
+
 
   public function toDto(): CreateDataEntryDTO
   {
     return new CreateDataEntryDto(
       values: $this->input('values'),
-      seo: $this->input('seo')
+      seo: $this->input('seo'),
+      relations: $this->input('relations')
     );
   }
+
   public function projectId(): int
   {
     return (int) $this->route('project');

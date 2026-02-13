@@ -15,7 +15,12 @@ return new class extends Migration
       $table->id();
       $table->foreignId('data_type_id')->constrained()->cascadeOnDelete();
       $table->foreignId('project_id')->constrained()->cascadeOnDelete();
-      $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
+      // $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
+      $table->enum('status', ['draft', 'published', 'scheduled', 'archived'])
+        ->default('draft');
+
+      $table->timestamp('scheduled_at')->nullable();
+
       $table->foreignId('created_by')->nullable()->constrained('users');
       $table->softDeletes();
       $table->timestamp('published_at')->nullable();
