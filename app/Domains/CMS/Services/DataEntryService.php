@@ -12,6 +12,8 @@ use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\SeoEntryRepository;
 use App\Domains\CMS\States\DataEntryStateResolver;
 use App\Domains\CMS\StrategyCheck\FieldValidatorResolver;
+use App\Events\EntryChanged;
+use App\Services\Versioning\VersionCreator;
 use DomainException;
 use Illuminate\Support\Facades\DB;
 
@@ -27,7 +29,6 @@ class DataEntryService
     private DataEntryRelationRepository $relations,
     private FieldRepositoryInterface $fieldsRepo,
     private FieldValidatorResolver $validatorResolver,
-
 
   ) {}
 
@@ -70,9 +71,14 @@ class DataEntryService
         'project_id' => $projectId,
         'data_type_id' => $dataTypeId,
         'status' => 'draft',
-        'scheduled_at' => $dto->scheduled_at ?? null,
+        // 'scheduled_at' => $dto->scheduled_at ?? null,
+        // 'status'       => $dto->status ?? 'draft',
+        'scheduled_at' => $dto->status === 'scheduled'
+          ? $dto->scheduled_at
+          : null,
         'created_by' => $userId, // nullable
       ]);
+      
       $this->validateFields(
         $dataTypeId,
         $dto->values,
@@ -109,15 +115,10 @@ class DataEntryService
           $dto->relations
         );
       }
+      $entry->load('values');
 
-      if ($dto->scheduled_at) {
-        try {
-          $dto->scheduled_at = \Carbon\Carbon::parse($dto->scheduled_at)
-            ->format('Y-m-d H:i:s');
-        } catch (\Exception $e) {
-          throw new DomainException("Invalid scheduled_at format.");
-        }
-      }
+      event(new EntryChanged($entry, $userId));
+
 
 
       return $entry;

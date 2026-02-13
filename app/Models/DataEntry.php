@@ -9,13 +9,6 @@ class DataEntry extends Model
 {
   use SoftDeletes;
 
-  protected $fillable = [
-    'data_type_id',
-    'project_id',
-    'status',
-    'created_by',
-  ];
-
   protected $guarded = [];
   public function dataType()
   {

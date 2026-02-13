@@ -33,7 +33,6 @@ Route::middleware('resolve.project')->group(function () {
   Route::get('/projects/{project}', [ProjectController::class, 'show']);
   Route::get('/projects', [ProjectController::class, 'index']);
   Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
-
 });
 
 
@@ -81,3 +80,9 @@ Route::post(
 
 Route::middleware('auth:sanctum')->group(function () {});
 Route::post('/data-entries/{id}', [DataEntryController::class, 'update']);
+
+
+Route::post(
+  '/data-entries/versions/{version}/restore',
+  [DataEntryController::class, 'restore']
+);

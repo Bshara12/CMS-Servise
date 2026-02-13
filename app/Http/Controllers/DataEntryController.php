@@ -12,11 +12,16 @@ use App\Domains\CMS\DTOs\Data\UpdateEntryDTO;
 use App\Domains\CMS\Requests\DataEntryRequest;
 use App\Domains\CMS\Requests\UpdateEntryRequest;
 use App\Domains\CMS\Services\FileUploadService;
+use App\Domains\CMS\Services\Versioning\VersionRestoreService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DataEntryController extends Controller
 {
+
+  public function __construct(
+    private VersionRestoreService $versionRestoreService
+  ) {}
 
   public function store(
     DataEntryRequest $request,
@@ -42,10 +47,18 @@ class DataEntryController extends Controller
         }
       }
     }
-    
-$scheduledAt = $request->input('scheduled_at')
-    ? Carbon::parse($request->input('scheduled_at'))->format('Y-m-d H:i:s')
-    : null;
+
+    $scheduledAt = $request->input('scheduled_at')
+      ? Carbon::parse($request->input('scheduled_at'))->format('Y-m-d H:i:s')
+      : null;
+
+    // $scheduledAt = null;
+
+    // if ($request->input('status') === 'scheduled') {
+    //   $scheduledAt = Carbon::parse(
+    //     $request->input('scheduled_at')
+    //   )->format('Y-m-d H:i:s');
+    // }
 
     $dto = new CreateDataEntryDto(
       values: $values,
@@ -81,5 +94,14 @@ $scheduledAt = $request->input('scheduled_at')
         $projectId
       )
     );
+  }
+  public function restore(int $versionId)
+  {
+    $this->versionRestoreService
+      ->restore($versionId, auth()->id());
+
+    return response()->json([
+      'message' => 'Version restored successfully'
+    ]);
   }
 }

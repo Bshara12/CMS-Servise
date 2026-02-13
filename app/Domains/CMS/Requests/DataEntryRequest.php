@@ -17,6 +17,10 @@ class DataEntryRequest extends FormRequest
       'relations.*.related_entry_ids' => ['required_with:relations', 'array'],
       'relations.*.related_entry_ids.*' => ['integer'],
       'files' => ['nullable', 'array'],
+      'status' => ['nullable', 'string', 'in:draft,published,scheduled'],
+      'scheduled_at'=>[ 'required_if:status,scheduled',
+    'nullable',
+    'date'],
     ];
   }
 
@@ -26,7 +30,9 @@ class DataEntryRequest extends FormRequest
     return new CreateDataEntryDto(
       values: $this->input('values'),
       seo: $this->input('seo'),
-      relations: $this->input('relations')
+      relations: $this->input('relations'),
+      status: $this->input('status'),
+      scheduled_at: $this->input('scheduled_at')
     );
   }
 

@@ -21,15 +21,21 @@ class EloquentDataEntryRepository implements DataEntryRepositoryInterface
   {
     return DataEntry::findOrFail($id);
   }
-  public function findForProjectOrFail(
-    int $entryId,
-    int $projectId
-  ): object {
-    return DB::table('data_entries')
-      ->where('id', $entryId)
-      ->where('project_id', $projectId)
-      ->firstOrFail();
-  }
+  // public function findForProjectOrFail(
+  //   int $entryId,
+  //   int $projectId
+  // ): object {
+  //   return DB::table('data_entries')
+  //     ->where('id', $entryId)
+  //     ->where('project_id', $projectId)
+  //     ->firstOrFail();
+  // }
+  public function findForProjectOrFail(int $entryId, int $projectId): DataEntry
+{
+    return DataEntry::where('id', $entryId)
+        ->where('project_id', $projectId)
+        ->firstOrFail();
+}
 
   public function updateStatus(int $id, string $status): void
   {

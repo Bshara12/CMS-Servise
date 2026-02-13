@@ -17,6 +17,10 @@ return new class extends Migration
       $table->integer('version_number');
       $table->json('snapshot');
       $table->foreignId('created_by')->nullable()->constrained('users');
+      $table->unique(
+        ['data_entry_id', 'version_number'],
+        'dev_entry_version_unique'
+      );
       $table->timestamps();
     });
   }
