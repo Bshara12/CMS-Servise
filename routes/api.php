@@ -68,6 +68,8 @@ Route::middleware('resolve.project')->prefix('cms')->group(function () {
   Route::put('/fields/{field}', [FieldController::class, 'update']);
   Route::delete('/fields/{field}', [FieldController::class, 'destroy']);
 });
+
+
 Route::post(
   '/projects/{project}/data-types/{dataType}/entries',
   [DataEntryController::class, 'store']
