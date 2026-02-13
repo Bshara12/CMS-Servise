@@ -2,25 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Domains\CMS\Actions\Data\CloneDataEntryAction;
 use App\Domains\CMS\Actions\Data\CreateDataEntryAction;
-use App\Domains\CMS\Actions\Data\PublishDataEntryAction;
-use App\Domains\CMS\Actions\Data\UpdateDraftEntryAction;
-use App\Domains\CMS\Actions\Data\UpdateEntryAction;
 use App\Domains\CMS\DTOs\Data\CreateDataEntryDto;
-use App\Domains\CMS\DTOs\Data\UpdateEntryDTO;
 use App\Domains\CMS\Requests\DataEntryRequest;
-use App\Domains\CMS\Requests\UpdateEntryRequest;
+use App\Domains\CMS\Services\DataEntryService;
 use App\Domains\CMS\Services\FileUploadService;
 use App\Domains\CMS\Services\Versioning\VersionRestoreService;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class DataEntryController extends Controller
 {
 
   public function __construct(
-    private VersionRestoreService $versionRestoreService
+    private VersionRestoreService $versionRestoreService,
+    private DataEntryService $service,
   ) {}
 
   public function store(
@@ -79,22 +74,27 @@ class DataEntryController extends Controller
   }
 
 
-  public function update(
-    int $id,
-    UpdateEntryRequest $request,
-    UpdateEntryAction $action
-  ) {
-    $projectId = (int) request()->header('X-Project-Id');
-
-    return response()->json(
-      $action->execute(
-        $id,
-        UpdateEntryDTO::fromRequest($request),
-        auth()->id(),
-        $projectId
-      )
+  public function update(DataEntryRequest $request)
+  {
+    $dto = CreateDataEntryDto::fromRequest($request);
+    $entry = $this->service->update(
+      $request,
+      dto: $dto,
+      userId: auth()->id()
     );
+
+    return response()->json([
+      'message' => 'Data updated successfully',
+      'entry' => $entry
+    ]);
   }
+
+  public function destroy($projectId, $dataTypeId, $entryId)
+  {
+    $this->service->destroy($entryId, $projectId);
+    return response()->json(['message' => 'Data deleted successfully']);
+  }
+
   public function restore(int $versionId)
   {
     $this->versionRestoreService

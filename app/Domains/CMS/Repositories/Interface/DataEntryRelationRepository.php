@@ -10,4 +10,10 @@ interface DataEntryRelationRepository
     int $projectId,
     array $relations
   ): void;
+
+  public function deleteForEntry(int $entryId): void;
+
+  public function deleteWhereRelatedIs(int $relatedId): void;
+
+  public function getEntriesWhereRelatedIs(int $entryId): array;
 }

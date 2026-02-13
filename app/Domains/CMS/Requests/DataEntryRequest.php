@@ -18,9 +18,11 @@ class DataEntryRequest extends FormRequest
       'relations.*.related_entry_ids.*' => ['integer'],
       'files' => ['nullable', 'array'],
       'status' => ['nullable', 'string', 'in:draft,published,scheduled'],
-      'scheduled_at'=>[ 'required_if:status,scheduled',
-    'nullable',
-    'date'],
+      'scheduled_at' => [
+        'required_if:status,scheduled',
+        'nullable',
+        'date'
+      ],
     ];
   }
 
@@ -48,5 +50,10 @@ class DataEntryRequest extends FormRequest
   public function filesInput(): array
   {
     return $this->file('files', []);
+  }
+
+  public function entryId(): int
+  {
+    return (int) $this->route('entry');
   }
 }

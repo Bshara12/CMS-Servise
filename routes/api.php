@@ -70,15 +70,12 @@ Route::middleware('resolve.project')->prefix('cms')->group(function () {
 });
 
 
-Route::post(
-  '/projects/{project}/data-types/{dataType}/entries',
-  [DataEntryController::class, 'store']
-);
+Route::post('/projects/{project}/data-types/{dataType}/entries', [DataEntryController::class, 'store']);
 
-Route::post(
-  '/entries/{entry}/publish',
-  DataEntryPublishController::class
-);
+Route::put('/projects/{project}/data-types/{dataType}/entries/{entry}', [DataEntryController::class, 'update']);
+Route::delete('/projects/{project}/data-types/{dataType}/entries/{entry}', [DataEntryController::class, 'destroy']);
+
+Route::post('/entries/{entry}/publish', DataEntryPublishController::class);
 
 Route::middleware('auth:sanctum')->group(function () {});
 Route::post('/data-entries/{id}', [DataEntryController::class, 'update']);

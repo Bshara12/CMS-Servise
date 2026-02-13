@@ -3,6 +3,7 @@
 namespace App\Domains\CMS\Repositories\Eloquent;
 
 use App\Domains\CMS\Repositories\Interface\DataEntryRelationRepository;
+use App\Models\DataEntryRelation;
 use Illuminate\Support\Facades\DB;
 
 class EloquentDataEntryRelationRepository implements DataEntryRelationRepository
@@ -56,5 +57,22 @@ class EloquentDataEntryRelationRepository implements DataEntryRelationRepository
     if (!empty($rows)) {
       DB::table('data_entry_relations')->insert($rows);
     }
+  }
+
+  public function deleteForEntry(int $entryId): void
+  {
+    DB::table('data_entry_relations')
+      ->where('data_entry_id', $entryId)
+      ->delete();
+  }
+
+  public function deleteWhereRelatedIs(int $relatedId): void
+  {
+    DataEntryRelation::where('related_entry_id', $relatedId)->delete();
+  }
+
+  public function getEntriesWhereRelatedIs(int $relatedId): array
+  {
+    return DataEntryRelation::where('related_entry_id', $relatedId)->get()->toArray();
   }
 }
