@@ -6,10 +6,16 @@ use App\Domains\CMS\Repositories\Interface\DataEntryRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\DataEntryValueRepository;
 use App\Domains\CMS\Repositories\Interface\DataEntryRelationRepository;
 use App\Domains\CMS\Repositories\Interface\SeoEntryRepository;
+use App\Domains\Core\Actions\Action;
 use Illuminate\Support\Facades\DB;
 
-class DeleteDataEntryAction
+class DeleteDataEntryAction extends Action
 {
+  protected function circuitServiceName(): string
+  {
+    return 'dataEntry.delete';
+  }
+
   public function __construct(
     private DataEntryRepositoryInterface $entries,
     private DataEntryValueRepository $values,
@@ -19,7 +25,7 @@ class DeleteDataEntryAction
 
   public function execute(int $entryId, int $projectId): void
   {
-    DB::transaction(function () use ($entryId, $projectId) {
+    $this->run(function () use ($entryId, $projectId) {
 
       $entry = $this->entries->findForProjectOrFail($entryId, $projectId);
 

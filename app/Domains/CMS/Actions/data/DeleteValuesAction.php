@@ -3,15 +3,22 @@
 namespace App\Domains\CMS\Actions\data;
 
 use App\Domains\CMS\Repositories\Interface\DataEntryValueRepository;
+use App\Domains\Core\Actions\Action;
 
-class DeleteValuesAction
+class DeleteValuesAction extends Action
 {
+  protected function circuitServiceName(): string
+  {
+    return 'dataEntry.deleteValues';
+  }
   public function __construct(
     private DataEntryValueRepository $values
   ) {}
 
   public function execute(int $entryId): void
   {
-    $this->values->deleteForEntry($entryId);
+    $this->run(function () use ($entryId) {
+      $this->values->deleteForEntry($entryId);
+    });
   }
 }
