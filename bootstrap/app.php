@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     health: '/up',
   )
   ->withMiddleware(function (Middleware $middleware): void {
-    //
+
     $middleware->alias([
       'resolve.project' => \App\Http\Middleware\ResolveProject::class,
     ]);
@@ -32,5 +32,5 @@ return Application::configure(basePath: dirname(__DIR__))
   })
   ->withSchedule(function (Schedule $schedule) {
     $schedule->command('app:publish-scheduled-entries')
-        ->everyMinute();
-})->create();
+      ->everyMinute();
+  })->create();

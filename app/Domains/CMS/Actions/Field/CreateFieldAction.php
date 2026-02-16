@@ -2,6 +2,7 @@
 
 namespace App\Domains\CMS\Actions\Field;
 
+use App\Domains\Core\Actions\Action;
 use App\Domains\CMS\Actions\Field\CreationStrategy\FieldTypeFactory;
 use App\Domains\CMS\DTOs\Field\CreateFieldDTO;
 use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
@@ -9,28 +10,28 @@ use App\Models\DataType;
 use App\Models\DataTypeField;
 use App\Models\DataTypeRelation;
 
-class CreateFieldAction
+class CreateFieldAction extends Action
 {
-  public function __construct(
-    protected FieldRepositoryInterface $repository
-  ) {}
+
+  protected function circuitServiceName(): string
+  {
+    return 'dataTypeField.create';
+  }
+
+  public function __construct(protected FieldRepositoryInterface $repository) {}
 
   public function execute(CreateFieldDTO $dto): DataTypeField
   {
-    $this->repository->ensureFieldIsUnique($dto->data_type_id, $dto->name);
-
-    $strategy = FieldTypeFactory::make($dto->type);
-
-    $strategy->validateRules($dto->validation_rules);
-
-    $normalizedSettings = $strategy->normalizeSettings($dto->settings);
-
-    if ($dto->type === 'relation') {
-      $normalizedSettings['data_type_relation_id'] =
-        $this->ensureDataTypeRelationExists($dto, $normalizedSettings);
-    }
-
-    return $this->repository->create($dto, $normalizedSettings);
+    return $this->run(function () use ($dto) {
+      $this->repository->ensureFieldIsUnique($dto->data_type_id, $dto->name);
+      $strategy = FieldTypeFactory::make($dto->type);
+      $strategy->validateRules($dto->validation_rules);
+      $normalizedSettings = $strategy->normalizeSettings($dto->settings);
+      if ($dto->type === 'relation') {
+        $normalizedSettings['data_type_relation_id'] = $this->ensureDataTypeRelationExists($dto, $normalizedSettings);
+      }
+      return $this->repository->create($dto, $normalizedSettings);
+    });
   }
 
   public function ensureDataTypeRelationExists(CreateFieldDTO $dto, array $settings): int

@@ -2,18 +2,26 @@
 
 namespace App\Domains\CMS\Services;
 
+use App\Domains\CMS\Actions\Data\DeleteDataEntryAction;
+use App\Domains\CMS\Actions\data\DeleteValuesAction;
+use App\Domains\CMS\Actions\data\HandleRelationsAction;
+use App\Domains\CMS\Actions\data\HandleSeoAction;
+use App\Domains\CMS\Actions\data\InsertValuesAction;
+use App\Domains\CMS\Actions\data\MergeFilesAction;
+use App\Domains\CMS\Actions\data\NormalizeScheduledAtAction;
+use App\Domains\CMS\Actions\data\ResolveStateAction;
+use App\Domains\CMS\Actions\data\ValidateFieldsAction;
 use App\Domains\CMS\DTOs\Data\CreateDataEntryDto;
 use App\Domains\CMS\DTOs\Data\UpdateEntryDTO;
 use App\Domains\CMS\Repositories\Interface\DataEntryRelationRepository;
-use App\Domains\CMS\Repositories\Interface\DataEntryVersionRepository;
 use App\Domains\CMS\Repositories\Interface\DataEntryRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\DataEntryValueRepository;
 use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\SeoEntryRepository;
+use App\Domains\CMS\Requests\DataEntryRequest;
 use App\Domains\CMS\States\DataEntryStateResolver;
 use App\Domains\CMS\StrategyCheck\FieldValidatorResolver;
 use App\Events\EntryChanged;
-use App\Services\Versioning\VersionCreator;
 use DomainException;
 use Illuminate\Support\Facades\DB;
 
@@ -24,12 +32,19 @@ class DataEntryService
     private DataEntryValueRepository $values,
     private SeoEntryRepository $seo,
     private SeoGeneratorService $seoGenerator,
-    private DataEntryVersionRepository $versions,
     private DataEntryStateResolver $stateResolver,
     private DataEntryRelationRepository $relations,
     private FieldRepositoryInterface $fieldsRepo,
     private FieldValidatorResolver $validatorResolver,
-
+    private MergeFilesAction $mergeFiles,
+    private NormalizeScheduledAtAction $normalizeScheduledAt,
+    private ValidateFieldsAction $validateFields,
+    private HandleSeoAction $handleSeo,
+    private InsertValuesAction $insertValues,
+    private DeleteValuesAction $deleteValues,
+    private HandleRelationsAction $handleRelations,
+    private ResolveStateAction $resolveState,
+    private DeleteDataEntryAction $deleteEntry
   ) {}
 
   private function validateFields(
@@ -78,7 +93,7 @@ class DataEntryService
           : null,
         'created_by' => $userId, // nullable
       ]);
-      
+
       $this->validateFields(
         $dataTypeId,
         $dto->values,
@@ -119,92 +134,49 @@ class DataEntryService
 
       event(new EntryChanged($entry, $userId));
 
+      return $entry;
+    });
+  }
 
+  public function update(DataEntryRequest $request, CreateDataEntryDto $dto, ?int $userId)
+  {
+    return DB::transaction(function () use ($request, $dto, $userId) {
+      $entryId = $request->entryId();
+      $projectId = $request->projectId();
+      $dataTypeId = $request->dataTypeId();
+
+      $entry = $this->entries->findForProjectOrFail($entryId, $projectId);
+
+      if ($entry->status === "published") {
+        throw new DomainException("Cannot update published entry.");
+      }
+
+      $dto->values = $this->mergeFiles->execute($dto->values, $request->filesInput(), $projectId, $dataTypeId);
+
+      $dto->scheduled_at = $this->normalizeScheduledAt->execute($dto->scheduled_at, $dto->status);
+
+      $this->validateFields->execute($dataTypeId, $dto->values);
+
+      $this->resolveState->execute($entry, $dto->status, $dto->scheduled_at);
+
+      $this->deleteValues->execute($entryId);
+
+      $this->insertValues->execute($entryId, $dataTypeId, $dto->values);
+
+      $this->handleSeo->execute($entryId, $dto->seo, $dto->values);
+
+      $this->handleRelations->execute($entryId, $dataTypeId, $projectId, $dto->relations);
+
+      $entry->load('values');
+
+      event(new EntryChanged($entry, $userId));
 
       return $entry;
     });
   }
 
-
-
-
-
-  public function update(
-    int $entryId,
-    UpdateEntryDTO $dto,
-    ?int $userId,
-    int $projectId
-  ) {
-    return DB::transaction(function () use ($entryId, $dto, $userId, $projectId) {
-
-      // 1️⃣ جلب entry ضمن المشروع
-      $entry = $this->entries->findForProjectOrFail($entryId, $projectId);
-
-      if ($entry->status === 'archived') {
-        throw new DomainException('Archived entry cannot be updated');
-      }
-
-      // 2️⃣ draft → تعديل مباشر
-      if ($entry->status === 'draft') {
-        $this->replaceValues($entry, $dto, $userId);
-        return $entry;
-      }
-
-      // 3️⃣ published / scheduled → نسخة جديدة
-      $newEntry = $this->cloneAsDraft($entry, $userId);
-
-      $this->replaceValues($newEntry, $dto, $userId);
-
-      // 4️⃣ إعادة الحالة تلقائياً
-      if ($entry->status === 'published') {
-        $this->entries->updateStatus($newEntry->id, 'published');
-      }
-
-      if ($entry->status === 'scheduled') {
-        $this->entries->schedule(
-          $newEntry->id,
-          $entry->publish_at
-        );
-      }
-
-      return $newEntry;
-    });
-  }
-
-  private function replaceValues(
-    object $entry,
-    UpdateEntryDTO $dto,
-    ?int $userId
-  ): void {
-    $this->values->deleteForEntry($entry->id);
-
-    $this->values->bulkInsert(
-      $entry->id,
-      $entry->data_type_id,
-      $dto->values
-    );
-
-    $this->entries->touchUpdatedBy($entry->id, $userId);
-  }
-
-  private function cloneAsDraft(
-    object $entry,
-    ?int $userId
-  ): object {
-    $new = $this->entries->create([
-      'project_id'   => $entry->project_id,
-      'data_type_id' => $entry->data_type_id,
-      'status'       => 'draft',
-      'created_by'   => $userId,
-    ]);
-
-    $values = $this->values->getForEntry($entry->id);
-
-    $this->values->bulkInsertFromSnapshot(
-      $new->id,
-      $values
-    );
-
-    return $new;
+  public function destroy(int $entryId, int $projectId)
+  {
+    $this->deleteEntry->execute($entryId, $projectId);
   }
 }
