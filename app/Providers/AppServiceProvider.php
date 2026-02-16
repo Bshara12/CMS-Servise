@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Domains\CMS\Read\Repositories\EntryReadRepository;
+use App\Domains\CMS\Read\Repositories\EntryReadRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\DataEntryVersionRepository;
 use App\Domains\CMS\Repositories\Interface\DataEntryRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\DataTypeRepositoryInterface;
@@ -62,6 +64,10 @@ class AppServiceProvider extends ServiceProvider
     $this->app->bind(
       DataEntryRelationRepository::class,
       EloquentDataEntryRelationRepository::class
+    );
+      $this->app->bind(
+      EntryReadRepositoryInterface::class,
+      EntryReadRepository::class
     );
   }
 

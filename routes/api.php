@@ -3,6 +3,7 @@
 use App\Http\Controllers\DataEntryController;
 use App\Http\Controllers\DataEntryPublishController;
 use App\Http\Controllers\DataTypeController;
+use App\Http\Controllers\EntryDetailController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Http\Request;
@@ -84,4 +85,13 @@ Route::post('/data-entries/{id}', [DataEntryController::class, 'update']);
 Route::post(
   '/data-entries/versions/{version}/restore',
   [DataEntryController::class, 'restore']
+);
+Route::get('/entries/{id}', [EntryDetailController::class, 'show']);
+Route::get(
+  '/entries/{id}/with-relations',
+  [EntryDetailController::class, 'showwithrelation']
+);
+Route::get(
+    '/entries/{id}/same-type',
+    [EntryDetailController::class, 'showwithsametype']
 );
