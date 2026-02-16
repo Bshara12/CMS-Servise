@@ -13,6 +13,7 @@ class FieldTypeFactory
       'select' => new SelectFieldStrategy(),
       'json' => new JsonFieldStrategy(),
       'relation' => new RelationFieldStrategy(),
+      'file' => new FileFieldStrategy(),
       default => abort(422, "Unsupported field type '{$type}'."),
     };
   }
