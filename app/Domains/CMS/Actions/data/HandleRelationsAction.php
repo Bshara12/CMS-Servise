@@ -3,9 +3,15 @@
 namespace App\Domains\CMS\Actions\data;
 
 use App\Domains\CMS\Repositories\Interface\DataEntryRelationRepository;
+use App\Domains\Core\Actions\Action;
 
-class HandleRelationsAction
+class HandleRelationsAction extends Action
 {
+  protected function circuitServiceName(): string
+  {
+    return 'dataEntry.handleRelations';
+  }
+
   public function __construct(
     private DataEntryRelationRepository $relations
   ) {}
@@ -15,16 +21,14 @@ class HandleRelationsAction
     if (!$relations) {
       return;
     }
-
-    // حذف العلاقات القديمة
-    $this->relations->deleteForEntry($entryId);
-
-    // إدخال العلاقات الجديدة
-    $this->relations->insertForEntry(
-      $entryId,
-      $dataTypeId,
-      $projectId,
-      $relations
-    );
+    $this->run(function () use ($entryId, $dataTypeId, $projectId, $relations) {
+      $this->relations->deleteForEntry($entryId);
+      $this->relations->insertForEntry(
+        $entryId,
+        $dataTypeId,
+        $projectId,
+        $relations
+      );
+    });
   }
 }

@@ -68,7 +68,7 @@ class FieldController extends Controller
 
     if ($trashed->isEmpty()) {
       return response()->json([
-        'message' => 'No trashed DataTypes found'
+        'message' => 'No trashed Data-Type Fields found'
       ], 404);
     }
     return response()->json($trashed);
