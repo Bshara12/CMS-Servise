@@ -31,15 +31,44 @@ class EloquentDataEntryValueRepository implements DataEntryValueRepository
 
       $fieldId = $fields[$fieldSlug]->id;
 
+      // foreach ($langs as $lang => $value) {
+      //   $rows[] = [
+      //     'data_entry_id' => $entryId,
+      //     'data_type_field_id' => $fieldId,
+      //     'language' => $lang,
+      //     'value' => (string) $value,
+      //     'created_at' => $now,
+      //     'updated_at' => $now,
+      //   ];
+      // }
       foreach ($langs as $lang => $value) {
-        $rows[] = [
-          'data_entry_id' => $entryId,
-          'data_type_field_id' => $fieldId,
-          'language' => $lang,
-          'value' => (string) $value,
-          'created_at' => $now,
-          'updated_at' => $now,
-        ];
+
+        // ✅ إذا القيمة array (مثل file field)
+        if (is_array($value)) {
+
+          foreach ($value as $singleValue) {
+
+            $rows[] = [
+              'data_entry_id' => $entryId,
+              'data_type_field_id' => $fieldId,
+              'language' => $lang,
+              'value' => (string) $singleValue,
+              'created_at' => $now,
+              'updated_at' => $now,
+            ];
+          }
+        } else {
+
+          // ✅ الحقول العادية (text, number...)
+          $rows[] = [
+            'data_entry_id' => $entryId,
+            'data_type_field_id' => $fieldId,
+            'language' => $lang,
+            'value' => (string) $value,
+            'created_at' => $now,
+            'updated_at' => $now,
+          ];
+        }
       }
     }
 

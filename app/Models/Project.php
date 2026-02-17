@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Project extends Model
 {
   use SoftDeletes;
-  protected $fillable = ['name', 'owner_id', 'supported_languages', 'enabled_modules'];
+  protected $fillable = ['name', 'owner_id', 'supported_languages', 'enabled_modules','public_id'];
 
   protected $casts = [
     'supported_languages' => 'array',

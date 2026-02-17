@@ -8,6 +8,7 @@ class FieldValidatorResolver
         return match ($type) {
             'number' => new NumberFieldValidator(),
             'string' => new StringFieldValidator(),
+            'file'   => new FileFieldValidator(),
             default => throw new \Exception("Unsupported field type: {$type}")
         };
     }

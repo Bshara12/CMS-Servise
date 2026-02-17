@@ -5,6 +5,7 @@ namespace App\Domains\CMS\Actions\Project;
 use App\Domains\CMS\DTOs\CreateProjectDTO;
 use App\Domains\CMS\Repositories\Interface\ProjectRepositoryInterface;
 use App\Models\Project;
+use Illuminate\Support\Str;
 
 class CreateProjectAction
 {
@@ -12,14 +13,23 @@ class CreateProjectAction
     private ProjectRepositoryInterface $repository
   ) {}
 
+  // public function execute(CreateProjectDTO $dto): Project
+  // {
+  //   $project = $this->repository->create($dto->toArray());
+
+  // //  $project->users()->attach($dto->ownerId, [
+  // //     'role' => 'owner'
+  // //   ]);
+
+  //   return $project;
+  // }
   public function execute(CreateProjectDTO $dto): Project
   {
-    $project = $this->repository->create($dto->toArray());
+    $data = $dto->toArray();
 
-  //  $project->users()->attach($dto->ownerId, [
-  //     'role' => 'owner'
-  //   ]);
+    $data['public_id'] = Str::uuid()->toString();
+    // أو Str::random(32)
 
-    return $project;
+    return $this->repository->create($data);
   }
 }

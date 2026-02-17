@@ -24,29 +24,29 @@ class FileUploadService
     return $file->store($path, 'public');
   }
 
-  public function publish(int $entryId, ?int $userId)
-  {
-    return DB::transaction(function () use ($entryId, $userId) {
+  // public function publish(int $entryId, ?int $userId)
+  // {
+  //   return DB::transaction(function () use ($entryId, $userId) {
 
-      $entry = $this->entries->findOrFail($entryId);
+  //     $entry = $this->entries->findOrFail($entryId);
 
-      $state = $this->stateResolver->resolve($entry);
-      $state->publish($entry);
+  //     $state = $this->stateResolver->resolve($entry);
+  //     $state->publish($entry);
 
-      $snapshot = [
-        'entry' => $entry->toArray(),
-        'values' => $this->values->getForEntry($entry->id),
-        'seo' => $this->seo->getForEntry($entry->id),
-      ];
+  //     $snapshot = [
+  //       'entry' => $entry->toArray(),
+  //       'values' => $this->values->getForEntry($entry->id),
+  //       'seo' => $this->seo->getForEntry($entry->id),
+  //     ];
 
-      $this->versions->create(
-        $entry->id,
-        1,
-        $snapshot,
-        $userId
-      );
+  //     $this->versions->create(
+  //       $entry->id,
+  //       1,
+  //       $snapshot,
+  //       $userId
+  //     );
 
-      return $entry;
-    });
-  }
+  //     return $entry;
+  //   });
+  // }
 }

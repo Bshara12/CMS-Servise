@@ -2,6 +2,7 @@
 
 namespace App\Domains\CMS\Services;
 
+use App\Domains\CMS\Actions\Data\CreateDataEntryAction;
 use App\Domains\CMS\Actions\Data\DeleteDataEntryAction;
 use App\Domains\CMS\Actions\data\DeleteValuesAction;
 use App\Domains\CMS\Actions\data\HandleRelationsAction;
@@ -44,35 +45,11 @@ class DataEntryService
     private DeleteValuesAction $deleteValues,
     private HandleRelationsAction $handleRelations,
     private ResolveStateAction $resolveState,
-    private DeleteDataEntryAction $deleteEntry
+    private DeleteDataEntryAction $deleteEntry,
+    private CreateDataEntryAction $createAction,
+
   ) {}
 
-  private function validateFields(
-    int $dataTypeId,
-    array $values,
-    array $files
-  ): void {
-
-    $fields = $this->fieldsRepo->getByDataType($dataTypeId);
-
-    foreach ($fields as $slug => $field) {
-
-      if ($field->required && !isset($values[$slug])) {
-        throw new DomainException("Field {$slug} is required.");
-      }
-
-      if (!isset($values[$slug])) {
-        continue;
-      }
-
-      foreach ($values[$slug] as $lang => $value) {
-
-        $validator = $this->validatorResolver->resolve($field->type);
-
-        $validator->validate($value, (array) $field);
-      }
-    }
-  }
 
   public function create(
     int $projectId,
@@ -80,64 +57,13 @@ class DataEntryService
     CreateDataEntryDto $dto,
     ?int $userId
   ) {
-    return DB::transaction(function () use ($projectId, $dataTypeId, $dto, $userId) {
-
-      $entry = $this->entries->create([
-        'project_id' => $projectId,
-        'data_type_id' => $dataTypeId,
-        'status' => 'draft',
-        // 'scheduled_at' => $dto->scheduled_at ?? null,
-        // 'status'       => $dto->status ?? 'draft',
-        'scheduled_at' => $dto->status === 'scheduled'
-          ? $dto->scheduled_at
-          : null,
-        'created_by' => $userId, // nullable
-      ]);
-
-      $this->validateFields(
-        $dataTypeId,
-        $dto->values,
-        $dto->files ?? []
-      );
-
-      $state = $this->stateResolver->resolve($entry);
-
-      if ($dto->status === 'published') {
-        $state->publish($entry);
-      }
-
-      if ($dto->status === 'scheduled') {
-        $state->schedule($entry, $dto->scheduled_at);
-      }
-
-      $this->values->bulkInsert(
-        $entry->id,
-        $dataTypeId,
-        $dto->values
-      );
-
-      if ($dto->seo) {
-        $this->seo->insertForEntry($entry->id, $dto->seo);
-      } else {
-        $generatedSeo = $this->seoGenerator->generate($dto->values);
-        $this->seo->insertForEntry($entry->id, $generatedSeo);
-      }
-      if ($dto->relations) {
-        $this->relations->insertForEntry(
-          $entry->id,
-          $dataTypeId,
-          $projectId,
-          $dto->relations
-        );
-      }
-      $entry->load('values');
-
-      event(new EntryChanged($entry, $userId));
-
-      return $entry;
-    });
+    return $this->createAction->execute(
+      $projectId,
+      $dataTypeId,
+      $dto,
+      $userId
+    );
   }
-
   public function update(DataEntryRequest $request, CreateDataEntryDto $dto, ?int $userId)
   {
     return DB::transaction(function () use ($request, $dto, $userId) {

@@ -21,10 +21,10 @@ return new class extends Migration
       $table->timestamps();
 
       // $table->index(['data_entry_id', 'data_type_field_id', 'language']);
-      $table->unique(
-        ['data_entry_id', 'data_type_field_id', 'language'],
-        'dev_entry_field_lang_unique'
-      );
+      // $table->unique(
+      //   ['data_entry_id', 'data_type_field_id', 'language'],
+      //   'dev_entry_field_lang_unique'
+      // );
     });
   }
 

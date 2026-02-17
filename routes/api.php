@@ -34,6 +34,8 @@ Route::middleware('resolve.project')->group(function () {
   Route::get('/projects/{project}', [ProjectController::class, 'show']);
   Route::get('/projects', [ProjectController::class, 'index']);
   Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
+Route::get('/entries/{id}', [EntryDetailController::class, 'show']);
+
 });
 
 
@@ -86,7 +88,6 @@ Route::post(
   '/data-entries/versions/{version}/restore',
   [DataEntryController::class, 'restore']
 );
-Route::get('/entries/{id}', [EntryDetailController::class, 'show']);
 Route::get(
   '/entries/{id}/with-relations',
   [EntryDetailController::class, 'showwithrelation']
