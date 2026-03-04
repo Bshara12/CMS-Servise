@@ -65,7 +65,12 @@ class GetEntriesBySameTypeAction
     ?string $requestedLang,
     int $page = 1,
     int $perPage = 20,
-    bool $all = false
+    bool $all = false,
+    ?string $dateFrom = null,
+    ?string $dateTo = null,
+    ?int $fieldId = null,
+    ?string $searchValue = null
+
   ): ?array {
 
     $language = $this->languageResolver->resolve($requestedLang);
@@ -77,7 +82,14 @@ class GetEntriesBySameTypeAction
       return null;
     }
 
-    $query = $this->typeRepository->queryPublishedByType($dataTypeId);
+    // $query = $this->typeRepository->queryPublishedByType($dataTypeId);
+    $query = $this->typeRepository->filterPublishedByType(
+      dataTypeId: $dataTypeId,
+      dateFrom: $dateFrom,
+      dateTo: $dateTo,
+      fieldId: $fieldId,
+      searchValue: $searchValue
+    );
 
     if ($all) {
       $entriesCollection = $query->get();
@@ -85,7 +97,7 @@ class GetEntriesBySameTypeAction
       $perPage = min($perPage, 100);
       $entriesCollection = $query->paginate($perPage, ['*'], 'page', $page);
     }
-    
+
     // $entryIds = collect($entriesCollection)->pluck('id')->toArray();
     $entryIds = $entriesCollection->pluck('id')->toArray();
 

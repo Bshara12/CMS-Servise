@@ -170,7 +170,10 @@ class EntryReadRepository implements EntryReadRepositoryInterface
     $valuesQuery = DB::table('data_entry_values as v')
       ->join('data_type_fields as f', 'f.id', '=', 'v.data_type_field_id')
       ->where('v.data_entry_id', $entryId)
-      ->whereIn('v.language', [$language, $fallback, "0"])
+      ->where(function($q) use ($language, $fallback) {
+        $q->whereIn('v.language', [$language, $fallback, "0"])
+          ->orWhereNull('v.language'); // Include null language values
+      })
       ->select(
         'f.name',
         'f.type',
@@ -187,7 +190,8 @@ class EntryReadRepository implements EntryReadRepositoryInterface
       // language priority
       $selected = $fieldGroup->firstWhere('language', $language)
         ?? $fieldGroup->firstWhere('language', $fallback)
-        ?? $fieldGroup->firstWhere('language', "0");
+        ?? $fieldGroup->firstWhere('language', "0")
+        ?? $fieldGroup->firstWhere('language', null);
 
       if (!$selected) {
         continue;
@@ -270,7 +274,10 @@ class EntryReadRepository implements EntryReadRepositoryInterface
     $values = DB::table('data_entry_values as v')
       ->join('data_type_fields as f', 'f.id', '=', 'v.data_type_field_id')
       ->whereIn('v.data_entry_id', $entries->keys())
-      ->whereIn('v.language', [$language, $fallback, "0"])
+      ->where(function($q) use ($language, $fallback) {
+        $q->whereIn('v.language', [$language, $fallback, "0"])
+          ->orWhereNull('v.language'); // Include null language values
+      })
       ->select(
         'v.data_entry_id',
         'f.name',
@@ -292,7 +299,8 @@ class EntryReadRepository implements EntryReadRepositoryInterface
 
         $selected = $fieldGroup->firstWhere('language', $language)
           ?? $fieldGroup->firstWhere('language', $fallback)
-          ?? $fieldGroup->firstWhere('language', "0");
+          ?? $fieldGroup->firstWhere('language', "0")
+          ?? $fieldGroup->firstWhere('language', null);
 
         if (!$selected) {
           continue;

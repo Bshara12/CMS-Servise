@@ -37,4 +37,27 @@ class EntryReadService
     return $this->getEntriesBySameTypeAction
       ->execute($entryId, $lang, $page, $perPage, $all);
   }
+  public function getSameTypeFiltered(
+    int $entryId,
+    ?string $lang,
+    ?string $dateFrom,
+    ?string $dateTo,
+    ?int $fieldId,
+    ?string $search,
+    bool $all = false,
+    int $page = 1,
+    int $perPage = 20
+) {
+    return $this->getEntriesBySameTypeAction->execute(
+        $entryId,
+        $lang,
+        $page,
+        $perPage,
+        $all,
+        $dateFrom,
+        $dateTo,
+        $fieldId,
+        $search
+    );
+}
 }
