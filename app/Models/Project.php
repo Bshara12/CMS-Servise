@@ -14,6 +14,7 @@ class Project extends Model
 
   protected $fillable = ['name', 'owner_id', 'supported_languages', 'enabled_modules', 'public_id'];
 
+
   protected $casts = [
     'supported_languages' => 'array',
     'enabled_modules' => 'array',
