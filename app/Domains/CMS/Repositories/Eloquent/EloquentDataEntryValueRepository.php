@@ -5,7 +5,6 @@ namespace App\Domains\CMS\Repositories\Eloquent;
 use App\Domains\CMS\Repositories\Interface\DataEntryValueRepository;
 use Illuminate\Support\Facades\DB;
 
-
 class EloquentDataEntryValueRepository implements DataEntryValueRepository
 {
 
@@ -107,5 +106,53 @@ class EloquentDataEntryValueRepository implements DataEntryValueRepository
     }
 
     DB::table('data_entry_values')->insert($rows);
+  }
+
+  public function pluckEntryIdsByFieldComparison(string $field, string $operator, $value): array
+  {
+    return DB::table('data_entry_values')
+      ->join('data_type_fields', 'data_type_fields.id', '=', 'data_entry_values.data_type_field_id')
+      ->where('data_type_fields.name', $field)
+      ->where('data_entry_values.value', $operator, $value)
+      ->pluck('data_entry_values.data_entry_id')
+      ->toArray();
+  }
+
+  public function pluckEntryIdsByFieldLike(string $field, string $pattern): array
+  {
+    return DB::table('data_entry_values')
+      ->join('data_type_fields', 'data_type_fields.id', '=', 'data_entry_values.data_type_field_id')
+      ->where('data_type_fields.name', $field)
+      ->where('data_entry_values.value', 'LIKE', $pattern)
+      ->pluck('data_entry_values.data_entry_id')
+      ->toArray();
+  }
+
+  public function pluckEntryIdsByFieldIn(string $field, array $values): array
+  {
+    if (empty($values)) {
+      return [];
+    }
+
+    return DB::table('data_entry_values')
+      ->join('data_type_fields', 'data_type_fields.id', '=', 'data_entry_values.data_type_field_id')
+      ->where('data_type_fields.name', $field)
+      ->whereIn('data_entry_values.value', $values)
+      ->pluck('data_entry_values.data_entry_id')
+      ->toArray();
+  }
+
+  public function pluckEntryIdsByFieldBetween(string $field, array $values): array
+  {
+    if (count($values) !== 2) {
+      return [];
+    }
+
+    return DB::table('data_entry_values')
+      ->join('data_type_fields', 'data_type_fields.id', '=', 'data_entry_values.data_type_field_id')
+      ->where('data_type_fields.name', $field)
+      ->whereBetween('data_entry_values.value', [$values[0], $values[1]])
+      ->pluck('data_entry_values.data_entry_id')
+      ->toArray();
   }
 }

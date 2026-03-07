@@ -75,4 +75,24 @@ class EloquentDataEntryRelationRepository implements DataEntryRelationRepository
   {
     return DataEntryRelation::where('related_entry_id', $relatedId)->get()->toArray();
   }
+
+  public function pluckEntryIdsWhereRelatedIs(int $relatedId): array
+  {
+    return DataEntryRelation::query()
+      ->where('related_entry_id', $relatedId)
+      ->pluck('data_entry_id')
+      ->toArray();
+  }
+
+  public function pluckEntryIdsByRelatedIds(array $relatedIds): array
+  {
+    if (empty($relatedIds)) {
+      return [];
+    }
+
+    return DataEntryRelation::query()
+      ->whereIn('related_entry_id', $relatedIds)
+      ->pluck('data_entry_id')
+      ->toArray();
+  }
 }

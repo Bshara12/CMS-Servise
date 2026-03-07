@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Domains\CMS\Read\Repositories\EntryReadRepository;
 use App\Domains\CMS\Read\Repositories\EntryReadRepositoryInterface;
+use App\Domains\CMS\Repositories\Eloquent\DataCollectionRepositoryEloquent;
 use App\Domains\CMS\Repositories\Interface\DataEntryVersionRepository;
 use App\Domains\CMS\Repositories\Interface\DataEntryRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\DataTypeRepositoryInterface;
@@ -16,6 +17,7 @@ use App\Domains\CMS\Repositories\Interface\DataEntryValueRepository;
 use App\Domains\CMS\Repositories\Eloquent\DataTypeRepositoryEloquent;
 use App\Domains\CMS\Repositories\Eloquent\EloquentDataEntryRelationRepository;
 use App\Domains\CMS\Repositories\Eloquent\FieldRepositoryEloquent;
+use App\Domains\CMS\Repositories\Interface\DataCollectionRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\DataEntryRelationRepository;
 use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\ProjectRepositoryInterface;
@@ -33,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
     $this->app->bind(DataTypeRepositoryInterface::class, DataTypeRepositoryEloquent::class);
     $this->app->bind(FieldRepositoryInterface::class, FieldRepositoryEloquent::class);
     $this->app->bind(DataEntryRepositoryInterface::class, EloquentDataEntryRepository::class);
+    $this->app->bind(DataCollectionRepositoryInterface::class, DataCollectionRepositoryEloquent::class);
     $this->app->bind(
       ProjectRepositoryInterface::class,
       EloquentProjectRepository::class

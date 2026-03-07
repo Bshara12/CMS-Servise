@@ -4,13 +4,11 @@ namespace App\Domains\CMS\Repositories\Eloquent;
 
 use App\Domains\CMS\DTOs\Field\CreateFieldDTO;
 use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
-use App\Models\DataType;
 use App\Models\DataTypeField;
 use Illuminate\Support\Facades\DB;
 
 class FieldRepositoryEloquent implements FieldRepositoryInterface
 {
-
   public function ensureFieldIsUnique(int $data_type_id, string $name): void
   {
     $exists = DataTypeField::where('data_type_id', $data_type_id)
@@ -32,6 +30,13 @@ class FieldRepositoryEloquent implements FieldRepositoryInterface
     if ($exists) {
       abort(422, "Field '{$name}' already exists for this Data-Type.");
     }
+  }
+
+  public function findByDataTypeAndName(int $dataTypeId, string $name): ?DataTypeField
+  {
+    return DataTypeField::where('data_type_id', $dataTypeId)
+      ->where('name', $name)
+      ->first();
   }
 
   public function create(CreateFieldDTO $dto, array $normalizedSettings): DataTypeField
@@ -70,11 +75,6 @@ class FieldRepositoryEloquent implements FieldRepositoryInterface
       ->keyBy('name');
   }
 
-  public function list(DataType $dataType)
-  {
-    return DataTypeField::where('data_type_id', $dataType->id)->get();
-  }
-
   public function delete(DataTypeField $field)
   {
     $field->delete();
@@ -84,11 +84,6 @@ class FieldRepositoryEloquent implements FieldRepositoryInterface
   {
     $field = DataTypeField::onlyTrashed()->findOrFail($fieldId);
     $field->restore();
-  }
-
-  public function indexTrashed(DataType $dataType)
-  {
-    return DataTypeField::onlyTrashed()->where('data_type_id', $dataType->id)->get();
   }
 
   public function forceDelete(int $fieldId): void

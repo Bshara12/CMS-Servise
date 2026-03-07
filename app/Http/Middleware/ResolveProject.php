@@ -34,10 +34,10 @@ class ResolveProject
   // }
   public function handle(Request $request, Closure $next)
   {
-    $projectKey = $request->header('X-Project-Key');
+    $projectKey = $request->header('X-Project-Id');
 
     if (!$projectKey) {
-      abort(400, 'X-Project-Key header is required');
+      abort(400, 'X-Project-Id header is required');
     }
 
     $project = Project::where('public_id', $projectKey)->first();

@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DataType extends Model
 {
   use SoftDeletes;
-
+  use HasFactory;
+  
   protected $fillable = [
     'project_id',
     'name',
@@ -27,6 +29,11 @@ class DataType extends Model
   public function project()
   {
     return $this->belongsTo(Project::class);
+  }
+
+  public function collections()
+  {
+    return $this->hasMany(DataCollection::class);
   }
 
   public function fields()

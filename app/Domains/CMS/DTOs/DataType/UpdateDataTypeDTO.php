@@ -21,7 +21,7 @@ class UpdateDataTypeDTO
       slug: $request->input('slug'),
       description: $request->input('description'),
       is_active: $request->boolean('is_active', true),
-      settings: $request->input('settings', [])
+      settings: $request->input('settings') ?? []
     );
   }
 }

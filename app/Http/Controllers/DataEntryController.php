@@ -9,8 +9,7 @@ use App\Domains\CMS\Services\DataEntryService;
 use App\Domains\CMS\Services\FileUploadService;
 use App\Domains\CMS\Services\Versioning\VersionRestoreService;
 use Carbon\Carbon;
-use Exception;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 
 class DataEntryController extends Controller
 {

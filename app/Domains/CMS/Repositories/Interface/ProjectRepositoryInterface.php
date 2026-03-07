@@ -9,6 +9,7 @@ interface ProjectRepositoryInterface
   public function create(array $data): Project;
   public function update(Project $project, array $data): Project;
   public function find(Project $project): Project;
+  public function findByKey(string $key): Project;
   public function all(): \Illuminate\Support\Collection;
-   public function delete(Project $project): void;
+  public function delete(Project $project): void;
 }

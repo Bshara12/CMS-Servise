@@ -13,4 +13,15 @@ interface DataEntryValueRepository
   public function deleteForEntry(int $entryId): void;
 
   public function bulkInsertFromSnapshot(int $entryId, array $values): void;
+
+  /**
+   * Filtering helpers used by dynamic collections (Strategy pattern)
+   */
+  public function pluckEntryIdsByFieldComparison(string $field, string $operator, $value): array;
+
+  public function pluckEntryIdsByFieldLike(string $field, string $pattern): array;
+
+  public function pluckEntryIdsByFieldIn(string $field, array $values): array;
+
+  public function pluckEntryIdsByFieldBetween(string $field, array $values): array;
 }

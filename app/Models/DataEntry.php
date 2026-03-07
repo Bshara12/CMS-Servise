@@ -17,7 +17,7 @@ class DataEntry extends Model
 
   public function values()
   {
-    return $this->hasMany(DataEntryValue::class);
+    return $this->hasMany(DataEntryValue::class, 'data_entry_id');
   }
 
   public function versions()

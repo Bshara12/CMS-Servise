@@ -18,4 +18,19 @@ interface DataEntryRepositoryInterface
   public function updateStatus(int $id, string $status): void;
   public function schedule(int $id, string $publishAt): void;
   public function touchUpdatedBy(int $id, ?int $userId): void;
+
+  /**
+   * Helpers for dynamic collections / relations
+   */
+  public function pluckIdsByProjectTypeAndValues(
+    int $projectId,
+    int $dataTypeId,
+    array $values
+  ): array;
+
+  public function pluckIdsForProjectTypeExcluding(
+    int $projectId,
+    int $dataTypeId,
+    array $excludedEntryIds
+  ): array;
 }

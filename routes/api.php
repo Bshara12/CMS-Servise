@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DataCollectionController;
 use App\Http\Controllers\DataEntryController;
 use App\Http\Controllers\DataEntryPublishController;
 use App\Http\Controllers\DataTypeController;
@@ -34,8 +35,7 @@ Route::middleware('resolve.project')->group(function () {
   Route::get('/projects/{project}', [ProjectController::class, 'show']);
   Route::get('/projects', [ProjectController::class, 'index']);
   Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
-Route::get('/entries/{id}', [EntryDetailController::class, 'show']);
-
+  Route::get('/entries/{id}', [EntryDetailController::class, 'show']);
 });
 
 
@@ -70,6 +70,12 @@ Route::middleware('resolve.project')->prefix('cms')->group(function () {
   Route::get('/data-types/{dataType}/fields', [FieldController::class, 'index']);
   Route::put('/fields/{field}', [FieldController::class, 'update']);
   Route::delete('/fields/{field}', [FieldController::class, 'destroy']);
+
+  // -------------------------
+  // Collections
+  // -------------------------
+  Route::post('/projects/collections', [DataCollectionController::class, 'store']);
+  Route::put('/projects/collections/{collection}', [DataCollectionController::class, 'update']);
 });
 
 
@@ -93,6 +99,6 @@ Route::get(
   [EntryDetailController::class, 'showwithrelation']
 );
 Route::get(
-    '/entries/{id}/same-type',
-    [EntryDetailController::class, 'showwithsametype']
+  '/entries/{id}/same-type',
+  [EntryDetailController::class, 'showwithsametype']
 );
