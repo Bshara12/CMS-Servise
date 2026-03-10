@@ -4,7 +4,6 @@ namespace App\Domains\CMS\Actions\DataCollection;
 
 use App\Domains\CMS\Repositories\Interface\DataCollectionRepositoryInterface;
 use App\Domains\CMS\Services\DynamicCollectionQueryBuilder;
-use App\Models\DataCollection;
 
 class GenerateDynamicItemsAction
 {
@@ -13,7 +12,7 @@ class GenerateDynamicItemsAction
     protected DynamicCollectionQueryBuilder $builder
   ) {}
 
-  public function execute(DataCollection $collection)
+  public function execute($collection)
   {
     // Get items based on collection's dynamic source
     $entries = $this->builder->build($collection);

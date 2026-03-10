@@ -8,21 +8,27 @@ use App\Models\DataCollection;
 
 interface DataCollectionRepositoryInterface
 {
+  public function getBySlug(string $slug): ?DataCollection;
+
   public function create(CreateDataCollectionDTO $dto): DataCollection;
 
   public function createDataCollectionItem(array $data): void;
 
   public function update(UpdateDataCollectionDTO $dto): DataCollection;
 
-  public function deleteItems(int $collectionId): void;
+  public function delete(int $collectionId): void;
 
-  public function find(int $projectId, int $id): ?DataCollection;
+  public function deleteItems(int $collectionId): void;
 
   public function list(int $projectId);
 
-  public function trashed(int $projectId);
+  public function find(int $projectId, string $slug): ?DataCollection;
 
-  public function restore(int $id): void;
+  public function getCollectionItems(int $collectionId);
 
-  public function forceDelete(int $id): void;
+  public function insertItems(int $collectionId, array $items): void;
+
+  public function removeItems(int $collectionId, array $items): void;
+
+  public function reOrderItems(int $collectionId, array $items);
 }

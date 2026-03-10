@@ -15,10 +15,10 @@ class DeleteDataCollectionItemsAction extends Action
 
   public function __construct(protected DataCollectionRepositoryInterface $repository) {}
 
-  public function execute($collection_id)
+  public function execute($collectionId)
   {
-    return $this->run(function () use ($collection_id) {
-      return $this->repository->deleteItems($collection_id);
+    return $this->run(function () use ($collectionId) {
+      return $this->repository->deleteItems($collectionId);
     });
   }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Domains\CMS\DTOs\DataCollection;
 
+use App\Domains\CMS\Repositories\Interface\DataCollectionRepositoryInterface;
 use App\Domains\CMS\Requests\UpdateDataCollectionRequest;
 use App\Models\DataCollection;
 
@@ -20,8 +21,10 @@ class UpdateDataCollectionDTO
     public ?array $settings,
   ) {}
 
-  public static function fromRequest(UpdateDataCollectionRequest $request, DataCollection $collection): self
+  public static function fromRequest(UpdateDataCollectionRequest $request, string $collectionSlug): self
   {
+    $collection = app(DataCollectionRepositoryInterface::class)->getBySlug($collectionSlug);
+
     return new self(
       collection_id: $collection->id,
       data_type_id: $request->data_type_id,

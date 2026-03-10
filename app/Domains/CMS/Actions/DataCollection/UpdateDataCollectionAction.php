@@ -17,7 +17,7 @@ class UpdateDataCollectionAction extends Action
 
   public function execute($dto)
   {
-    return $this->run(function () use ($dto) {
+    $this->run(function () use ($dto) {
       return $this->repository->update($dto);
     });
   }

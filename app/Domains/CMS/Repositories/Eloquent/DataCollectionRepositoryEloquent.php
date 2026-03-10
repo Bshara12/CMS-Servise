@@ -7,9 +7,15 @@ use App\Domains\CMS\DTOs\DataCollection\UpdateDataCollectionDTO;
 use App\Domains\CMS\Repositories\Interface\DataCollectionRepositoryInterface;
 use App\Models\DataCollection;
 use App\Models\DataCollectionItem;
+use App\Models\DataEntry;
+use DomainException;
 
 class DataCollectionRepositoryEloquent implements DataCollectionRepositoryInterface
 {
+  public function getBySlug(string $slug): ?DataCollection
+  {
+    return DataCollection::where('slug', $slug)->first();
+  }
 
   public function create(CreateDataCollectionDTO $dto): DataCollection
   {
@@ -28,14 +34,14 @@ class DataCollectionRepositoryEloquent implements DataCollectionRepositoryInterf
     return $collection;
   }
 
+  public function delete(int $collectionId): void
+  {
+    DataCollection::findOrFail($collectionId)->delete();
+  }
+
   public function deleteItems(int $collectionId): void
   {
     DataCollectionItem::where('collection_id', $collectionId)->delete();
-  }
-
-  public function find(int $projectId, int $id): ?DataCollection
-  {
-    return DataCollection::where('project_id', $projectId)->find($id);
   }
 
   public function list(int $projectId)
@@ -43,20 +49,98 @@ class DataCollectionRepositoryEloquent implements DataCollectionRepositoryInterf
     return DataCollection::where('project_id', $projectId)->get();
   }
 
-  public function trashed(int $projectId)
+  public function find(int $projectId, string $slug): ?DataCollection
   {
-    return DataCollection::onlyTrashed()
-      ->where('project_id', $projectId)
+    return DataCollection::where('project_id', $projectId)->where('slug', $slug)->first();
+  }
+
+  public function getCollectionItems(int $collectionId)
+  {
+    $items = DataCollectionItem::where('collection_id', $collectionId)->get();
+    foreach ($items as $item) {
+      $entry = DataEntry::where('id', $item->item_id)->first();
+      $item['data'] = $entry ?? null;
+      if ($entry) {
+        $entry['values'] = $entry->values()->get();
+      }
+    }
+    return $items;
+  }
+
+  public function insertItems(int $collectionId, array $items): void
+  {
+    $index = (DataCollectionItem::where('collection_id', $collectionId)->max('sort_order') ?? 0) + 1;
+    foreach ($items as $item) {
+      DataCollectionItem::create([
+        'collection_id' => $collectionId,
+        'item_id' => $item,
+        'sort_order' => $index++,
+      ]);
+    }
+  }
+
+  public function removeItems(int $collectionId, array $items): void
+  {
+    foreach ($items as $item) {
+      $record = DataCollectionItem::where('id', $item)->first();
+      if (!$record) {
+        continue;
+      }
+
+      if ($collectionId != $record->collection_id) {
+        throw new DomainException("You can't remove items from different collection.");
+      }
+
+      $record->delete();
+    }
+
+    $remainingItems = DataCollectionItem::where('collection_id', $collectionId)
+      ->orderBy('sort_order')
       ->get();
+
+    $order = 1;
+    foreach ($remainingItems as $item) {
+      $item->sort_order = $order++;
+      $item->save();
+    }
   }
 
-  public function restore(int $id): void
+  public function reOrderItems($collectionId, $items)
   {
-    DataCollection::onlyTrashed()->findOrFail($id)->restore();
-  }
+    $currentItems = DataCollectionItem::where('collection_id', $collectionId)
+      ->orderBy('sort_order')
+      ->get();
 
-  public function forceDelete(int $id): void
-  {
-    DataCollection::withTrashed()->findOrFail($id)->forceDelete();
+    $ordered = $currentItems->pluck('id')->toArray();
+
+    foreach ($items as $item) {
+      $id = $item['item_id'];
+      $newPos = $item['sort_order'] - 1;
+
+      $oldIndex = array_search($id, $ordered);
+      if ($oldIndex !== false) {
+        // يحذف عنصر واحد من المصفوفة ordered عند الرقم oldIndex
+        array_splice($ordered, $oldIndex, 1);
+      }
+      // عند المكان index=newPos
+      // لا تحذف شيء0
+      // أضف هذا العنصر [$id]
+      array_splice($ordered, $newPos, 0, [$id]);
+    }
+
+    foreach ($ordered as $index => $id) {
+      DataCollectionItem::where('id', $id)->update([
+        'sort_order' => $index + 1
+      ]);
+    }
+    $items = DataCollectionItem::where('collection_id', $collectionId)->orderBy('sort_order')->get();
+    foreach ($items as $item) {
+      $entry = DataEntry::where('id', $item->item_id)->first();
+      $item['data'] = $entry ?? null;
+      if ($entry) {
+        $entry['values'] = $entry->values()->get();
+      }
+    }
+    return $items;
   }
 }

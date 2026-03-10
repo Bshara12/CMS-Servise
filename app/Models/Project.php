@@ -25,5 +25,10 @@ class Project extends Model
     return $this->belongsToMany(User::class, 'project_user');
   }
 
+  public function collections()
+  {
+    return $this->hasMany(DataCollection::class);
+  }
+
   use TraitsBelongsToProject; // يضمن أي عملية create تحوي project_id
 }
