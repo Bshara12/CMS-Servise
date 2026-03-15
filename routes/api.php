@@ -77,6 +77,7 @@ Route::middleware('resolve.project')->prefix('cms')->group(function () {
   // -------------------------
   // static
   Route::get('/collections/{collectionSlug}', [DataCollectionController::class, 'show']);
+  Route::get('/collections/id/{collectionId}', [DataCollectionController::class, 'showById'])->whereNumber('collectionId');
   Route::post('/collections/{collectionSlug}/insert', [DataCollectionController::class, 'addItems']);
   Route::delete('/collections/{collectionSlug}/items', [DataCollectionController::class, 'removeItems']);
   Route::post('/collections/{collectionSlug}/items/reorder', [DataCollectionController::class, 'reorderItems']);

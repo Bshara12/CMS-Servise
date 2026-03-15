@@ -15,6 +15,7 @@ use App\Domains\CMS\DTOs\DataCollection\CreateDataCollectionDTO;
 use App\Domains\CMS\Read\Actions\DataCollection\GetCollectionEntriesAction;
 use App\Domains\CMS\Read\Actions\DataCollection\IndexDataCollectionAction;
 use App\Domains\CMS\Read\Actions\DataCollection\ShowDataCollectionDetailsAction;
+use App\Domains\CMS\Read\Actions\DataCollection\ShowDataCollectionDetailsByIdAction;
 
 class DataCollectionService
 {
@@ -29,7 +30,8 @@ class DataCollectionService
     protected InsertCollectionItemsAction $insertItemsAction,
     protected RemoveCollectionItemsAction $removeItemsAction,
     protected ReOrderCollectionItemsAction $reOrderItemsAction,
-    protected GetCollectionEntriesAction $getEntriesAction
+    protected GetCollectionEntriesAction $getEntriesAction,
+    protected ShowDataCollectionDetailsByIdAction $showDetailsByIdAction
   ) {}
 
   public function list($projectId)
@@ -58,7 +60,6 @@ class DataCollectionService
     return $collection;
   }
 
-
   public function delete($collectionSlug)
   {
     $this->deleteAction->execute($collectionSlug);
@@ -67,6 +68,11 @@ class DataCollectionService
   public function show(string $projectKey, string $collectionSlug)
   {
     return $this->showDetailsAction->execute($projectKey, $collectionSlug);
+  }
+
+  public function showById(int $collectionId)
+  {
+    return $this->showDetailsByIdAction->execute($collectionId);
   }
 
   public function addItems(CollectionItemsDTO $dto)

@@ -11,6 +11,7 @@ use App\Domains\CMS\Requests\InsertCollectionItemsRequest;
 use App\Domains\CMS\Requests\RemoveCollectionItemsRequest;
 use App\Domains\CMS\Requests\ReOrderCollectionItemsRequest;
 use App\Domains\CMS\Requests\UpdateDataCollectionRequest;
+use App\Models\DataCollection;
 
 class DataCollectionController extends Controller
 {
@@ -65,8 +66,22 @@ class DataCollectionController extends Controller
 
   public function show(string $collectionSlug)
   {
-    // $collection = app('currentProject')->collections()->where('slug', $collectionSlug)->first();
     $data = $this->service->show(app('currentProject')->public_id, $collectionSlug);
+
+    if (!$data) {
+      return response()->json([
+        'message' => 'Collection not found',
+      ], 404);
+    }
+
+    return response()->json([
+      'data' => $data,
+    ]);
+  }
+
+  public function showById(int $collectionId)
+  {
+    $data = $this->service->showById($collectionId);
 
     if (!$data) {
       return response()->json([

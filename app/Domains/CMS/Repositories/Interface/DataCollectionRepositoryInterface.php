@@ -23,6 +23,8 @@ interface DataCollectionRepositoryInterface
 
   public function find(int $projectId, string $slug): ?DataCollection;
 
+  public function findById(int $collectionId): ?DataCollection;
+
   public function getCollectionItems(int $collectionId);
 
   public function insertItems(int $collectionId, array $items): void;

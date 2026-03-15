@@ -56,6 +56,11 @@ class DataCollectionRepositoryEloquent implements DataCollectionRepositoryInterf
     return DataCollection::where('project_id', $projectId)->where('slug', $slug)->first();
   }
 
+  public function findById(int $collectionId): ?DataCollection
+  {
+    return DataCollection::where('id', $collectionId)->first();
+  }
+
   public function getCollectionItems(int $collectionId)
   {
     $items = DataCollectionItem::where('collection_id', $collectionId)->get();
