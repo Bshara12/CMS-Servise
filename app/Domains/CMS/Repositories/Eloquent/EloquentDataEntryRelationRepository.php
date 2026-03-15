@@ -80,6 +80,9 @@ class EloquentDataEntryRelationRepository implements DataEntryRelationRepository
   {
     return DataEntryRelation::query()
       ->where('related_entry_id', $relatedId)
+      ->whereHas('dataTypeRelation', function ($q) {
+        $q->where('relation_type', 'many_to_one');
+      })
       ->pluck('data_entry_id')
       ->toArray();
   }
@@ -92,6 +95,19 @@ class EloquentDataEntryRelationRepository implements DataEntryRelationRepository
 
     return DataEntryRelation::query()
       ->whereIn('related_entry_id', $relatedIds)
+      ->pluck('data_entry_id')
+      ->toArray();
+  }
+
+  public function pluckEntryIdsByRelatedIdsWithin(array $relatedIds, array $withinEntryIds): array
+  {
+    if (empty($relatedIds) || empty($withinEntryIds)) {
+      return [];
+    }
+
+    return DataEntryRelation::query()
+      ->whereIn('related_entry_id', $relatedIds)
+      ->whereIn('data_entry_id', $withinEntryIds)
       ->pluck('data_entry_id')
       ->toArray();
   }

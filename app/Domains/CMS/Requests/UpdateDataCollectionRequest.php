@@ -3,41 +3,44 @@
 namespace App\Domains\CMS\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use App\Models\DataCollection;
 
 class UpdateDataCollectionRequest extends FormRequest
 {
-  public function authorize(): bool
-  {
-    return true;
-  }
-
   public function rules(): array
   {
     return [
-      'data_type_id' => 'required|exists:data_types,id',
-      'name' => 'required|string|max:255',
-      'type' => 'required|in:manual,dynamic',
-      'slug' => [
-        'required',
-        'string',
-        'max:255',
-        Rule::unique('data_collections', 'slug')->ignore($this->getCurrentCollectionId()),
-      ],
-      'conditions' => 'nullable|array',
+      'name' => 'sometimes|string|max:255',
+
+      'conditions' => 'sometimes|array',
       'conditions.*.field' => 'required_with:conditions|string',
       'conditions.*.operator' => 'required_with:conditions|string',
       'conditions.*.value' => 'required_with:conditions',
-      'conditions_logic' => 'nullable|in:and,or',
-      'description' => 'nullable|string',
-      'is_active' => 'boolean',
-      'settings' => 'nullable|array',
+
+      'conditions_logic' => 'sometimes|in:and,or',
+
+      'description' => 'sometimes|string',
+
+      'settings' => 'sometimes|array',
     ];
   }
 
-  private function getCurrentCollectionId()
+  public function withValidator($validator)
   {
-    return DataCollection::where('slug', $this->route('collectionSlug'))->value('id');
+    $validator->after(function ($validator) {
+
+      $collection = DataCollection::where('slug', $this->route('collectionSlug'))->first();
+
+      if (!$collection) {
+        return;
+      }
+
+      if ($collection->type === 'manual' && $this->has('conditions')) {
+        $validator->errors()->add(
+          'conditions',
+          'You cannot send conditions for a manual collection.'
+        );
+      }
+    });
   }
 }

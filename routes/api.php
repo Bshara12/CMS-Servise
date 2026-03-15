@@ -6,6 +6,7 @@ use App\Http\Controllers\DataEntryPublishController;
 use App\Http\Controllers\DataTypeController;
 use App\Http\Controllers\EntryDetailController;
 use App\Http\Controllers\FieldController;
+use App\Http\Controllers\OfferController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -75,22 +76,27 @@ Route::middleware('resolve.project')->prefix('cms')->group(function () {
   // Collections
   // -------------------------
   // static
-  Route::get('/projects/collections/{collectionSlug}', [DataCollectionController::class, 'show']);
-  Route::post('/projects/collections/{collectionSlug}/insert', [DataCollectionController::class, 'addItems']);
-  Route::delete('/projects/collections/{collectionSlug}/items', [DataCollectionController::class, 'removeItems']);
-  Route::post('/projects/collections/{collectionSlug}/items/reorder', [DataCollectionController::class, 'reorderItems']);
+  Route::get('/collections/{collectionSlug}', [DataCollectionController::class, 'show']);
+  Route::post('/collections/{collectionSlug}/insert', [DataCollectionController::class, 'addItems']);
+  Route::delete('/collections/{collectionSlug}/items', [DataCollectionController::class, 'removeItems']);
+  Route::post('/collections/{collectionSlug}/items/reorder', [DataCollectionController::class, 'reorderItems']);
+  Route::get('/collections/{collectionSlug}/entries', [DataCollectionController::class, 'getEntries']);
 
   // CRUD
-  Route::get('/projects/collections', [DataCollectionController::class, 'index']);
-  Route::post('/projects/collections', [DataCollectionController::class, 'store']);
-  Route::put('/projects/collections/{collectionSlug}', [DataCollectionController::class, 'update']);
-  Route::delete('/projects/collections/{collectionSlug}', [DataCollectionController::class, 'destroy']);
+  Route::get('/collections', [DataCollectionController::class, 'index']);
+  Route::post('/collections', [DataCollectionController::class, 'store']);
+  Route::patch('/collections/{collectionSlug}', [DataCollectionController::class, 'update']);
+  Route::delete('/collections/{collectionSlug}', [DataCollectionController::class, 'destroy']);
 });
+
+// -------------------------
+// Data Entries
+// -------------------------
+Route::put('/projects/{project}/data-types/{dataType}/entries/{entry}', [DataEntryController::class, 'update']);
 
 
 Route::post('/projects/{project}/data-types/{dataType}/entries', [DataEntryController::class, 'store']);
 
-Route::put('/projects/{project}/data-types/{dataType}/entries/{entry}', [DataEntryController::class, 'update']);
 Route::delete('/projects/{project}/data-types/{dataType}/entries/{entry}', [DataEntryController::class, 'destroy']);
 
 Route::post('/entries/{entry}/publish', DataEntryPublishController::class);

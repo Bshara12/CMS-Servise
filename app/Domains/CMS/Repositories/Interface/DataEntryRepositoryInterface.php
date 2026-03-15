@@ -33,4 +33,9 @@ interface DataEntryRepositoryInterface
     int $dataTypeId,
     array $excludedEntryIds
   ): array;
+
+  /**
+   * @return int[]
+   */
+  public function pluckIdsForProject(int $projectId): array;
 }

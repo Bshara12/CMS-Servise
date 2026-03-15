@@ -26,6 +26,7 @@ return new class extends Migration
 
       $table->text('description')->nullable();
       $table->boolean('is_active')->default(true);
+      $table->boolean('is_offer')->default(false);
 
       // flexible future settings
       $table->json('settings')->nullable();
@@ -33,6 +34,16 @@ return new class extends Migration
       $table->timestamps();
 
       $table->unique(['project_id', 'slug']);
+      $table->index('project_id');
+      $table->index('data_type_id');
+      $table->index('slug');
+      $table->index('type');
+      $table->index('is_offer');
+      $table->index('is_active');
+      $table->index(['project_id', 'data_type_id']);
+      $table->index(['project_id', 'is_offer']);
+      $table->index(['project_id', 'slug']);
+      $table->index(['project_id', 'type']);
     });
   }
 

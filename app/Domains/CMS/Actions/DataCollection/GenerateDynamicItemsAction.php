@@ -25,5 +25,6 @@ class GenerateDynamicItemsAction
         'sort_order' => $index + 1,
       ]);
     }
+    return $entries;
   }
 }

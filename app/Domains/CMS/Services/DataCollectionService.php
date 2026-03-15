@@ -12,6 +12,7 @@ use App\Domains\CMS\Actions\DataCollection\ReOrderCollectionItemsAction;
 use App\Domains\CMS\Actions\DataCollection\UpdateDataCollectionAction;
 use App\Domains\CMS\DTOs\DataCollection\CollectionItemsDTO;
 use App\Domains\CMS\DTOs\DataCollection\CreateDataCollectionDTO;
+use App\Domains\CMS\Read\Actions\DataCollection\GetCollectionEntriesAction;
 use App\Domains\CMS\Read\Actions\DataCollection\IndexDataCollectionAction;
 use App\Domains\CMS\Read\Actions\DataCollection\ShowDataCollectionDetailsAction;
 
@@ -27,7 +28,8 @@ class DataCollectionService
     protected ShowDataCollectionDetailsAction $showDetailsAction,
     protected InsertCollectionItemsAction $insertItemsAction,
     protected RemoveCollectionItemsAction $removeItemsAction,
-    protected ReOrderCollectionItemsAction $reOrderItemsAction
+    protected ReOrderCollectionItemsAction $reOrderItemsAction,
+    protected GetCollectionEntriesAction $getEntriesAction
   ) {}
 
   public function list($projectId)
@@ -42,17 +44,20 @@ class DataCollectionService
     if ($dto->type === 'dynamic') {
       $this->generateAction->execute($collection);
     }
+    return $collection;
   }
 
   public function update($dto)
   {
     $collection = $this->updateAction->execute($dto);
 
-    if ($dto->type === 'dynamic') {
+    if ($collection->type === 'dynamic') {
       $this->deleteItemsAction->execute($dto->collection_id);
       $this->generateAction->execute($collection);
     }
+    return $collection;
   }
+
 
   public function delete($collectionSlug)
   {
@@ -77,5 +82,10 @@ class DataCollectionService
   public function reOrderItems(CollectionItemsDTO $dto)
   {
     return $this->reOrderItemsAction->execute($dto);
+  }
+
+  public function getEntries(string $projectKey, string $collectionSlug)
+  {
+    return $this->getEntriesAction->execute($projectKey, $collectionSlug);
   }
 }

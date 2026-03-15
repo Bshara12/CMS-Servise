@@ -8,6 +8,8 @@ use App\Domains\CMS\Repositories\Interface\DataCollectionRepositoryInterface;
 use App\Models\DataCollection;
 use App\Models\DataCollectionItem;
 use App\Models\DataEntry;
+use App\Models\DataType;
+use App\Models\DataTypeField;
 use DomainException;
 
 class DataCollectionRepositoryEloquent implements DataCollectionRepositoryInterface
@@ -17,9 +19,9 @@ class DataCollectionRepositoryEloquent implements DataCollectionRepositoryInterf
     return DataCollection::where('slug', $slug)->first();
   }
 
-  public function create(CreateDataCollectionDTO $dto): DataCollection
+  public function create($dto): DataCollection
   {
-    return DataCollection::create($dto->toArray());
+    return DataCollection::create($dto->CollectionToArray());
   }
 
   public function createDataCollectionItem(array $data): void
@@ -105,6 +107,15 @@ class DataCollectionRepositoryEloquent implements DataCollectionRepositoryInterf
     }
   }
 
+  public function pluckCollectionEntryIds(int $collectionId): array
+  {
+    return DataCollectionItem::query()
+      ->where('collection_id', $collectionId)
+      ->orderBy('sort_order')
+      ->pluck('item_id')
+      ->toArray();
+  }
+
   public function reOrderItems($collectionId, $items)
   {
     $currentItems = DataCollectionItem::where('collection_id', $collectionId)
@@ -142,5 +153,34 @@ class DataCollectionRepositoryEloquent implements DataCollectionRepositoryInterf
       }
     }
     return $items;
+  }
+
+  public function getEntries(int $collectionId)
+  {
+    $items = DataCollectionItem::where('collection_id', $collectionId)->get();
+
+    $data = [];
+
+    foreach ($items as $item) {
+      $entry = DataEntry::find($item->item_id);
+      if (!$entry) {
+        continue;
+      }
+
+      $fieldId = $entry->dataType->fields
+        ->where('name', 'price')
+        ->pluck('id')
+        ->first();
+
+      $price = $entry->values()
+        ->where('data_type_field_id', $fieldId)
+        ->value('value');
+
+      $data[] = [
+        'id' => $entry->id,
+        'price' => (float) $price,
+      ];
+    }
+    return $data;
   }
 }

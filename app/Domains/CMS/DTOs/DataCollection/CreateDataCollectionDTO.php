@@ -40,7 +40,7 @@ class CreateDataCollectionDTO
     );
   }
 
-  public function toArray(): array
+  public function CollectionToArray(): array
   {
     return [
       'project_id' => $this->project_id,

@@ -27,4 +27,11 @@ interface DataEntryRelationRepository
    * @return int[]
    */
   public function pluckEntryIdsByRelatedIds(array $relatedIds): array;
+
+  /**
+   * @param int[] $relatedIds
+   * @param int[] $withinEntryIds
+   * @return int[]
+   */
+  public function pluckEntryIdsByRelatedIdsWithin(array $relatedIds, array $withinEntryIds): array;
 }

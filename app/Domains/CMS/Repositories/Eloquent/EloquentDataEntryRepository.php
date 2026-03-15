@@ -31,11 +31,11 @@ class EloquentDataEntryRepository implements DataEntryRepositoryInterface
   //     ->firstOrFail();
   // }
   public function findForProjectOrFail(int $entryId, int $projectId): DataEntry
-{
+  {
     return DataEntry::where('id', $entryId)
-        ->where('project_id', $projectId)
-        ->firstOrFail();
-}
+      ->where('project_id', $projectId)
+      ->firstOrFail();
+  }
 
   public function updateStatus(int $id, string $status): void
   {
@@ -96,5 +96,13 @@ class EloquentDataEntryRepository implements DataEntryRepositoryInterface
     }
 
     return $query->pluck('id')->toArray();
+  }
+
+  public function pluckIdsForProject(int $projectId): array
+  {
+    return DataEntry::query()
+      ->where('project_id', $projectId)
+      ->pluck('id')
+      ->toArray();
   }
 }

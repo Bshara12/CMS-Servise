@@ -17,6 +17,7 @@ class DataCollection extends Model
     'conditions_logic',
     'description',
     'is_active',
+    'is_offer',
     'settings',
   ];
 
@@ -25,6 +26,7 @@ class DataCollection extends Model
     'conditions' => 'array',
     'settings' => 'array',
     'is_active' => 'boolean',
+    'is_offer' => 'boolean',
   ];
 
   public function project()

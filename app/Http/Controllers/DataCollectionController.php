@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Domains\CMS\DTOs\DataCollection\CollectionItemsDTO;
 use App\Domains\CMS\DTOs\DataCollection\CreateDataCollectionDTO;
-use App\Domains\CMS\DTOs\DataCollection\InsertCollectionItemsDTO;
 use App\Domains\CMS\DTOs\DataCollection\UpdateDataCollectionDTO;
 use App\Domains\CMS\Services\DataCollectionService;
 use App\Domains\CMS\Requests\CreateDataCollectionRequest;
@@ -36,20 +35,22 @@ class DataCollectionController extends Controller
   public function store(CreateDataCollectionRequest $request)
   {
     $dto = CreateDataCollectionDTO::fromRequest($request);
-    $this->service->create($dto);
+    $data = $this->service->create($dto);
 
     return response()->json([
       'message' => 'Collection created successfully',
+      'data' => $data
     ]);
   }
 
   public function update(UpdateDataCollectionRequest $request, string $collectionSlug)
   {
     $dto = UpdateDataCollectionDTO::fromRequest($request, $collectionSlug);
-    $this->service->update($dto);
+    $data = $this->service->update($dto);
 
     return response()->json([
       'message' => 'Collection updated successfully',
+      'data' => $data
     ]);
   }
 
@@ -107,5 +108,11 @@ class DataCollectionController extends Controller
       'message' => 'Items sorted successfully',
       'items' => $data
     ]);
+  }
+
+  public function getEntries($collectionSlug)
+  {
+    $entries = $this->service->getEntries(app('currentProject')->public_id, $collectionSlug);
+    return response()->json($entries);
   }
 }

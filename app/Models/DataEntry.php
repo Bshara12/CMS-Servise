@@ -11,6 +11,7 @@ class DataEntry extends Model
   use SoftDeletes;
   use HasFactory;
   protected $guarded = [];
+  
   public function dataType()
   {
     return $this->belongsTo(DataType::class);
@@ -25,7 +26,6 @@ class DataEntry extends Model
   {
     return $this->hasMany(DataEntryVersion::class);
   }
-
 
   public function relations()
   {

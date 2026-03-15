@@ -2,7 +2,6 @@
 
 namespace App\Domains\CMS\Repositories\Interface;
 
-use App\Domains\CMS\DTOs\DataCollection\CreateDataCollectionDTO;
 use App\Domains\CMS\DTOs\DataCollection\UpdateDataCollectionDTO;
 use App\Models\DataCollection;
 
@@ -10,7 +9,7 @@ interface DataCollectionRepositoryInterface
 {
   public function getBySlug(string $slug): ?DataCollection;
 
-  public function create(CreateDataCollectionDTO $dto): DataCollection;
+  public function create($dto): DataCollection;
 
   public function createDataCollectionItem(array $data): void;
 
@@ -31,4 +30,11 @@ interface DataCollectionRepositoryInterface
   public function removeItems(int $collectionId, array $items): void;
 
   public function reOrderItems(int $collectionId, array $items);
+  
+  public function getEntries(int $collectionId);
+
+  /**
+   * @return int[] entry ids inside collection
+   */
+  public function pluckCollectionEntryIds(int $collectionId): array;
 }

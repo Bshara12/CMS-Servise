@@ -10,6 +10,7 @@ use App\Domains\CMS\Services\EntryHierarchy\EntryHierarchyBuilder;
 use App\Domains\CMS\Services\ValueConditions\BetweenValueConditionStrategy;
 use App\Domains\CMS\Services\ValueConditions\ComparisonValueConditionStrategy;
 use App\Domains\CMS\Services\ValueConditions\ContainsValueConditionStrategy;
+use App\Domains\CMS\Services\ValueConditions\InCollectionConditionStrategy;
 use App\Domains\CMS\Services\ValueConditions\InValueConditionStrategy;
 use App\Domains\CMS\Services\ValueConditions\NotContainsValueConditionStrategy;
 use App\Domains\CMS\Services\ValueConditions\ValueConditionStrategy;
@@ -39,6 +40,7 @@ class DynamicCollectionQueryBuilder
       'contains' => new ContainsValueConditionStrategy($valueRepository),
       'not_contains' => new NotContainsValueConditionStrategy($valueRepository, $this->entryRepository),
       'in' => new InValueConditionStrategy($valueRepository),
+      'incollection' => new InCollectionConditionStrategy($valueRepository),
       'between' => new BetweenValueConditionStrategy($valueRepository),
     ];
   }
@@ -51,8 +53,16 @@ class DynamicCollectionQueryBuilder
     $conditions = $collection->conditions ?? [];
     $logic = strtolower($collection->conditions_logic ?? 'and');
 
+    if (isset($conditions['targeted_item'])) {
+      $targetId = $conditions['targeted_item'];
+
+      $entry = $this->entryRepository->find($targetId);
+
+      return $entry ? collect([$entry]) : collect([]);
+    }
+
     $allConditionResults = [];
-    
+
     // 1) collect entry IDs for each condition
     foreach ($conditions as $condition) {
       $field = $condition['field'];
@@ -96,33 +106,35 @@ class DynamicCollectionQueryBuilder
     $projectId = $this->projectId;
     $dataTypeId = $this->dataTypeId;
 
-    $fieldInfo = $this->fieldRepository->findByDataTypeAndName($dataTypeId, $field);
+    if (!$operator === 'inCollection') {
+      $fieldInfo = $this->fieldRepository->findByDataTypeAndName($dataTypeId, $field);
 
-    if (!$fieldInfo) return [];
+      if (!$fieldInfo) return [];
 
-    // ============================
-    // 1) Field is a relation
-    // ============================
-    if ($fieldInfo->type === 'relation') {
+      // ============================
+      // 1) Field is a relation
+      // ============================
+      if ($fieldInfo->type === 'relation') {
 
-      $relatedDataTypeId = $fieldInfo->settings['related_data_type_id'] ?? null;
-      if (!$relatedDataTypeId) return [];
+        $relatedDataTypeId = $fieldInfo->settings['related_data_type_id'] ?? null;
+        if (!$relatedDataTypeId) return [];
 
-      $relatedEntryIds = $this->entryRepository->pluckIdsByProjectTypeAndValues(
-        $projectId,
-        $relatedDataTypeId,
-        (array)$value
-      );
+        $relatedEntryIds = $this->entryRepository->pluckIdsByProjectTypeAndValues(
+          $projectId,
+          $relatedDataTypeId,
+          (array)$value
+        );
 
-      if (!$relatedEntryIds) return [];
+        if (!$relatedEntryIds) return [];
 
-      $directEntryIds = $this->relationRepository->pluckEntryIdsByRelatedIds($relatedEntryIds);
+        $directEntryIds = $this->relationRepository->pluckEntryIdsByRelatedIds($relatedEntryIds);
 
-      if (empty($directEntryIds)) {
-        return [];
+        if (empty($directEntryIds)) {
+          return [];
+        }
+
+        return $this->entryHierarchyBuilder->flattenIds($directEntryIds);
       }
-
-      return $this->entryHierarchyBuilder->flattenIds($directEntryIds);
     }
 
     // ============================

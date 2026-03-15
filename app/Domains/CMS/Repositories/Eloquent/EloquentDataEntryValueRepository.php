@@ -3,6 +3,8 @@
 namespace App\Domains\CMS\Repositories\Eloquent;
 
 use App\Domains\CMS\Repositories\Interface\DataEntryValueRepository;
+use App\Models\DataCollection;
+use App\Models\DataCollectionItem;
 use Illuminate\Support\Facades\DB;
 
 class EloquentDataEntryValueRepository implements DataEntryValueRepository
@@ -142,6 +144,23 @@ class EloquentDataEntryValueRepository implements DataEntryValueRepository
       ->toArray();
   }
 
+  public function pluckEntryIdsByFieldInCollection(int $projectId, int $dataTypeId, array $values): array
+  {
+    return DataCollection::where('project_id', $projectId)
+      ->where('data_type_id', $dataTypeId)
+      ->whereIn('slug', $values)
+      ->pluck('id')
+      ->toArray();
+  }
+
+  public function returnEntryIdsFromCollectionItems(array $collectionIds): array
+  {
+    return DataCollectionItem::whereIn('collection_id', $collectionIds)
+      ->pluck('item_id')
+      ->unique()
+      ->toArray();
+  }
+
   public function pluckEntryIdsByFieldBetween(string $field, array $values): array
   {
     if (count($values) !== 2) {
@@ -154,5 +173,86 @@ class EloquentDataEntryValueRepository implements DataEntryValueRepository
       ->whereBetween('data_entry_values.value', [$values[0], $values[1]])
       ->pluck('data_entry_values.data_entry_id')
       ->toArray();
+  }
+
+  public function pluckEntryIdsByFieldComparisonWithin(string $field, string $operator, $value, array $withinEntryIds): array
+  {
+    if (empty($withinEntryIds)) {
+      return [];
+    }
+
+    return DB::table('data_entry_values')
+      ->join('data_type_fields', 'data_type_fields.id', '=', 'data_entry_values.data_type_field_id')
+      ->where('data_type_fields.name', $field)
+      ->whereIn('data_entry_values.data_entry_id', $withinEntryIds)
+      ->where('data_entry_values.value', $operator, $value)
+      ->pluck('data_entry_values.data_entry_id')
+      ->toArray();
+  }
+
+  public function pluckEntryIdsByFieldLikeWithin(string $field, string $pattern, array $withinEntryIds): array
+  {
+    if (empty($withinEntryIds)) {
+      return [];
+    }
+
+    return DB::table('data_entry_values')
+      ->join('data_type_fields', 'data_type_fields.id', '=', 'data_entry_values.data_type_field_id')
+      ->where('data_type_fields.name', $field)
+      ->whereIn('data_entry_values.data_entry_id', $withinEntryIds)
+      ->where('data_entry_values.value', 'LIKE', $pattern)
+      ->pluck('data_entry_values.data_entry_id')
+      ->toArray();
+  }
+
+  public function pluckEntryIdsByFieldInWithin(string $field, array $values, array $withinEntryIds): array
+  {
+    if (empty($values) || empty($withinEntryIds)) {
+      return [];
+    }
+
+    return DB::table('data_entry_values')
+      ->join('data_type_fields', 'data_type_fields.id', '=', 'data_entry_values.data_type_field_id')
+      ->where('data_type_fields.name', $field)
+      ->whereIn('data_entry_values.data_entry_id', $withinEntryIds)
+      ->whereIn('data_entry_values.value', $values)
+      ->pluck('data_entry_values.data_entry_id')
+      ->toArray();
+  }
+
+  public function pluckEntryIdsByFieldBetweenWithin(string $field, array $values, array $withinEntryIds): array
+  {
+    if (count($values) !== 2 || empty($withinEntryIds)) {
+      return [];
+    }
+
+    return DB::table('data_entry_values')
+      ->join('data_type_fields', 'data_type_fields.id', '=', 'data_entry_values.data_type_field_id')
+      ->where('data_type_fields.name', $field)
+      ->whereIn('data_entry_values.data_entry_id', $withinEntryIds)
+      ->whereBetween('data_entry_values.value', [$values[0], $values[1]])
+      ->pluck('data_entry_values.data_entry_id')
+      ->toArray();
+  }
+
+  public function pluckNumericFieldValuesByEntryIds(string $field, array $entryIds): array
+  {
+    if (empty($entryIds)) {
+      return [];
+    }
+
+    $rows = DB::table('data_entry_values')
+      ->join('data_type_fields', 'data_type_fields.id', '=', 'data_entry_values.data_type_field_id')
+      ->where('data_type_fields.name', $field)
+      ->whereIn('data_entry_values.data_entry_id', $entryIds)
+      ->select(['data_entry_values.data_entry_id as entry_id', 'data_entry_values.value as value'])
+      ->get();
+
+    $out = [];
+    foreach ($rows as $row) {
+      $out[(int)$row->entry_id] = (float)$row->value;
+    }
+
+    return $out;
   }
 }

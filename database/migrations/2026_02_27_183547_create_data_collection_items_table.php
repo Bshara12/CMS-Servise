@@ -27,6 +27,9 @@ return new class extends Migration
       $table->integer('sort_order')->default(0);
 
       $table->timestamps();
+      $table->index('collection_id');
+      $table->index('item_id');
+      $table->index('sort_order');
     });
   }
 
