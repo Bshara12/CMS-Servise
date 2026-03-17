@@ -3,14 +3,57 @@
 namespace App\Domains\CMS\Requests;
 
 use App\Domains\CMS\DTOs\Data\CreateDataEntryDTO;
+use App\Models\DataEntry;
+use App\Models\DataType;
+use App\Support\CurrentProject;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class DataEntryRequest extends FormRequest
 {
+  protected function prepareForValidation(): void
+  {
+    if ($this->isMethod('post')) {
+      $slug = $this->input('slug');
+      $title = $this->input('title');
+
+      if ($title === null || $title === '') {
+        $valuesTitleEn = $this->input('values.title.en');
+        $valuesTitleAr = $this->input('values.title.ar');
+        $valuesTitle = $this->input('values.title');
+
+        $titleCandidate = $valuesTitleEn ?: $valuesTitleAr;
+
+        if (($titleCandidate === null || $titleCandidate === '') && is_array($valuesTitle)) {
+          foreach ($valuesTitle as $candidate) {
+            if (is_string($candidate) && $candidate !== '') {
+              $titleCandidate = $candidate;
+              break;
+            }
+          }
+        }
+
+        if (is_string($titleCandidate) && $titleCandidate !== '') {
+          $title = $titleCandidate;
+          $this->merge([
+            'title' => $title,
+          ]);
+        }
+      }
+
+      if (($slug === null || $slug === '') && ($title !== null && $title !== '')) {
+        $this->merge([
+          'slug' => Str::slug($title),
+        ]);
+      }
+    }
+  }
+
   public function rules(): array
   {
-    return [
-      'values' => ['required', 'array'],
+    $rules = [
+      'values' => [$this->isMethod('patch') ? 'sometimes' : 'required', 'array'],
       'seo' => ['nullable', 'array'],
       'relations' => ['nullable', 'array'],
       'relations.*.relation_id' => ['required_with:relations', 'integer'],
@@ -24,6 +67,17 @@ class DataEntryRequest extends FormRequest
         'date'
       ],
     ];
+
+    if ($this->isMethod('post')) {
+      $rules['slug'] = [
+        'required_without:title',
+        'string',
+        Rule::unique('data_entries', 'slug')->where(fn ($q) => $q->where('project_id', $this->projectId())),
+      ];
+      $rules['title'] = ['required_without:slug', 'string'];
+    }
+
+    return $rules;
   }
 
 
@@ -40,12 +94,18 @@ class DataEntryRequest extends FormRequest
 
   public function projectId(): int
   {
-    return (int) $this->route('project');
+    return CurrentProject::id();
   }
 
   public function dataTypeId(): int
   {
-    return (int) $this->route('dataType');
+    $dataType = $this->route('dataType');
+
+    if ($dataType instanceof DataType) {
+      return (int) $dataType->id;
+    }
+
+    return (int) $dataType;
   }
   public function filesInput(): array
   {
@@ -54,6 +114,12 @@ class DataEntryRequest extends FormRequest
 
   public function entryId(): int
   {
-    return (int) $this->route('entry');
+    $entry = $this->route('entry');
+
+    if ($entry instanceof DataEntry) {
+      return (int) $entry->id;
+    }
+
+    return (int) $entry;
   }
 }

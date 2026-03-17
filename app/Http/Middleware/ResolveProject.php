@@ -35,12 +35,23 @@ class ResolveProject
   public function handle(Request $request, Closure $next)
   {
     $projectKey = $request->header('X-Project-Key');
+    $projectId = $request->header('X-Project-Id');
 
-    if (!$projectKey) {
-      abort(400, 'X-Project-Key header is required');
+    $identifier = $projectKey ?: $projectId;
+
+    if (!$identifier) {
+      abort(400, 'X-Project-Key or X-Project-Id header is required');
     }
 
-    $project = Project::where('public_id', $projectKey)->first();
+    $project = null;
+
+    if (is_numeric($identifier)) {
+      $project = Project::find((int) $identifier);
+    } else {
+      $project = Project::where('public_id', $identifier)
+        ->orWhere('slug', $identifier)
+        ->first();
+    }
 
     if (!$project) {
       abort(404, 'Project not found');

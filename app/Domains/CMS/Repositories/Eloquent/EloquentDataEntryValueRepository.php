@@ -75,6 +75,63 @@ class EloquentDataEntryValueRepository implements DataEntryValueRepository
     DB::table('data_entry_values')->insert($rows);
   }
 
+  public function replacePartial(
+    int $entryId,
+    int $dataTypeId,
+    array $values
+  ): void {
+    // 1️⃣ جلب الحقول
+    $fields = DB::table('data_type_fields')
+      ->where('data_type_id', $dataTypeId)
+      ->get()
+      ->keyBy('name'); // name = slug تبع الحقل
+
+    $rows = [];
+    $now = now();
+
+    foreach ($values as $fieldSlug => $langs) {
+      if (!isset($fields[$fieldSlug])) {
+        throw new \Exception("Field {$fieldSlug} does not exist in this data type.");
+      }
+
+      $fieldId = $fields[$fieldSlug]->id;
+
+      foreach ($langs as $lang => $value) {
+        DB::table('data_entry_values')
+          ->where('data_entry_id', $entryId)
+          ->where('data_type_field_id', $fieldId)
+          ->where('language', $lang)
+          ->delete();
+
+        if (is_array($value)) {
+          foreach ($value as $singleValue) {
+            $rows[] = [
+              'data_entry_id' => $entryId,
+              'data_type_field_id' => $fieldId,
+              'language' => $lang,
+              'value' => (string) $singleValue,
+              'created_at' => $now,
+              'updated_at' => $now,
+            ];
+          }
+        } else {
+          $rows[] = [
+            'data_entry_id' => $entryId,
+            'data_type_field_id' => $fieldId,
+            'language' => $lang,
+            'value' => (string) $value,
+            'created_at' => $now,
+            'updated_at' => $now,
+          ];
+        }
+      }
+    }
+
+    if (!empty($rows)) {
+      DB::table('data_entry_values')->insert($rows);
+    }
+  }
+
   public function getForEntry(int $entryId): array
   {
     return DB::table('data_entry_values')

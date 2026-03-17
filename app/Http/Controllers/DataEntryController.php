@@ -9,6 +9,9 @@ use App\Domains\CMS\Requests\DataEntryRequest;
 use App\Domains\CMS\Services\DataEntryService;
 use App\Domains\CMS\Services\FileUploadService;
 use App\Domains\CMS\Services\Versioning\VersionRestoreService;
+use App\Models\DataEntry;
+use App\Models\DataType;
+use App\Support\CurrentProject;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -24,11 +27,22 @@ class DataEntryController extends Controller
 
   public function store(
     DataEntryRequest $request,
-    CreateDataEntryAction $action,
+    DataType $dataType,
     FileUploadService $uploader
   ) {
 
+    $authUser = $request->attributes->get('auth_user');
+    $userId = null;
+    if (is_array($authUser) && isset($authUser['id'])) {
+      $userId = (int) $authUser['id'];
+    } elseif (is_object($authUser) && isset($authUser->id)) {
+      $userId = (int) $authUser->id;
+    }
+
+    $userId = $userId ?? auth()->id();
+
     $values = $request->input('values', []);
+    // dd($values);
     $files = $request->filesInput();
 
     foreach ($files as $fieldId => $langs) {
@@ -37,8 +51,8 @@ class DataEntryController extends Controller
 
           $path = $uploader->upload(
             $file,
-            $request->projectId(),
-            $request->dataTypeId(),
+            CurrentProject::id(),
+            $dataType->id,
             (int) $fieldId
           );
 
@@ -67,24 +81,35 @@ class DataEntryController extends Controller
       scheduled_at: $scheduledAt
     );
 
-    $entry = $action->execute(
+    $entry = $this->service->create(
       projectId: $request->projectId(),
-      dataTypeId: $request->dataTypeId(),
+      dataTypeId: $dataType->id,
+      slug: $request->input('slug'),
       dto: $dto,
-      userId: auth()->id()
+      userId: $userId
     );
 
     return response()->json($entry, 201);
   }
 
 
-  public function update(DataEntryRequest $request)
+  public function update(DataEntryRequest $request, DataType $dataType, DataEntry $entry)
   {
+    $authUser = $request->attributes->get('auth_user');
+    $userId = null;
+    if (is_array($authUser) && isset($authUser['id'])) {
+      $userId = (int) $authUser['id'];
+    } elseif (is_object($authUser) && isset($authUser->id)) {
+      $userId = (int) $authUser->id;
+    }
+
+    $userId = $userId ?? auth()->id();
+
     $dto = CreateDataEntryDto::fromRequest($request);
     $entry = $this->service->update(
       $request,
       dto: $dto,
-      userId: auth()->id()
+      userId: $userId
     );
 
     return response()->json([
@@ -93,9 +118,27 @@ class DataEntryController extends Controller
     ]);
   }
 
-  public function destroy($projectId, $dataTypeId, $entryId)
+  public function destroy(string $entry)
   {
-    $this->service->destroy($entryId, $projectId);
+    $projectId =  CurrentProject::id();
+    $entryModel = DataEntry::query()
+      ->where('project_id', $projectId)
+      ->where('slug', $entry)
+      ->firstOrFail();
+
+    $this->service->destroy($entryModel->id, $projectId);
+    return response()->json(['message' => 'Data deleted successfully']);
+  }
+
+  public function destroyByType(DataType $dataType, string $entry)
+  {
+    $projectId =  CurrentProject::id();
+    $entryModel = DataEntry::query()
+      ->where('project_id', $projectId)
+      ->where('slug', $entry)
+      ->firstOrFail();
+
+    $this->service->destroy($entryModel->id, $projectId);
     return response()->json(['message' => 'Data deleted successfully']);
   }
 
@@ -108,5 +151,4 @@ class DataEntryController extends Controller
       'message' => 'Version restored successfully'
     ]);
   }
-
 }

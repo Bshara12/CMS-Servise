@@ -13,9 +13,10 @@ return new class extends Migration
   {
     Schema::create('data_entries', function (Blueprint $table) {
       $table->id();
+      $table->string('slug');
       $table->foreignId('data_type_id')->constrained()->cascadeOnDelete();
       $table->foreignId('project_id')->constrained()->cascadeOnDelete();
-      // $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
+      $table->unique(['project_id','slug']);
       $table->enum('status', ['draft', 'published', 'scheduled', 'archived'])
         ->default('draft');
 

@@ -14,6 +14,7 @@ return new class extends Migration
     Schema::create('projects', function (Blueprint $table) {
       $table->id();
       $table->string('public_id', 36)->unique();
+      $table->string('slug')->unique();
       $table->string('name');
       $table->foreignId('owner_id')->constrained('users'); 
       $table->json('supported_languages')->nullable();

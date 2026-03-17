@@ -5,12 +5,30 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DataEntry extends Model
 {
   use SoftDeletes;
   use HasFactory;
   protected $guarded = [];
+
+  // public function resolveRouteBinding($value, $field = null)
+  // {
+  //   $project = app('currentProject', null);
+
+  //   if (!$project || !isset($project->id)) {
+  //     throw (new ModelNotFoundException)->setModel(static::class);
+  //   }
+
+  //   $field = $field ?: 'slug';
+
+  //   return $this->newQuery()
+  //     ->where($field, $value)
+  //     ->where('project_id', $project->id)
+  //     ->firstOrFail();
+  // }
+
   public function dataType()
   {
     return $this->belongsTo(DataType::class);

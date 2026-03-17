@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DataType extends Model
@@ -24,6 +25,22 @@ class DataType extends Model
     'settings' => 'array',
     'is_active' => 'boolean',
   ];
+
+  // public function resolveRouteBinding($value, $field = null)
+  // {
+  //   $project = app()->bound('currentProject') ? app('currentProject') : null;
+
+  //   if (!$project || !isset($project->id)) {
+  //     throw (new ModelNotFoundException)->setModel(static::class);
+  //   }
+
+  //   $field = $field ?: 'id';
+
+  //   return $this->newQuery()
+  //     ->where($field, $value)
+  //     ->where('project_id', $project->id)
+  //     ->firstOrFail();
+  // }
 
 
   public function project()

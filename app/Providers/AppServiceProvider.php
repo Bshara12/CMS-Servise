@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Domains\CMS\Read\Repositories\EntryReadRepository;
 use App\Domains\CMS\Read\Repositories\EntryReadRepositoryInterface;
+use App\Domains\CMS\Read\Repositories\EntryVersionReadRepository;
+use App\Domains\CMS\Read\Repositories\EntryVersionReadRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\DataEntryVersionRepository;
 use App\Domains\CMS\Repositories\Interface\DataEntryRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\DataTypeRepositoryInterface;
@@ -68,6 +70,11 @@ class AppServiceProvider extends ServiceProvider
       $this->app->bind(
       EntryReadRepositoryInterface::class,
       EntryReadRepository::class
+    );
+
+    $this->app->bind(
+      EntryVersionReadRepositoryInterface::class,
+      EntryVersionReadRepository::class
     );
   }
 

@@ -51,19 +51,71 @@ class DataEntryService
   ) {}
 
 
+  // public function create(
+  //   int $projectId,
+  //   int $dataTypeId,
+  //   CreateDataEntryDto $dto,
+  //   ?int $userId
+  // ) {
+  //   return $this->createAction->execute(
+  //     $projectId,
+  //     $dataTypeId,
+  //     $dto,
+  //     $userId
+  //   );
+  // }
   public function create(
     int $projectId,
     int $dataTypeId,
+    string $slug,
     CreateDataEntryDto $dto,
     ?int $userId
   ) {
-    return $this->createAction->execute(
-      $projectId,
-      $dataTypeId,
-      $dto,
-      $userId
-    );
+    return DB::transaction(function () use ($projectId, $dataTypeId, $slug, $dto, $userId) {
+      // dd("sdf");
+
+      $dto->scheduled_at = $this->normalizeScheduledAt
+        ->execute($dto->scheduled_at, $dto->status);
+
+      $this->validateFields
+        ->execute($dataTypeId, $dto->values);
+
+      $entry = $this->createAction->execute(
+        $projectId,
+        $dataTypeId,
+        $slug,
+        $userId
+      );
+      $this->resolveState
+        ->execute($entry, $dto->status, $dto->scheduled_at);
+
+      // dd($dto->values);
+
+      $this->insertValues
+        ->execute($entry->id, $dataTypeId, $dto->values);
+
+      $this->handleSeo
+        ->execute($entry->id, $dto->seo, $dto->values);
+
+      $this->handleRelations
+        ->execute(
+          $entry->id,
+          $dataTypeId,
+          $projectId,
+          $dto->relations
+        );
+
+      $entry->load('values');
+
+      event(new EntryChanged($entry, $userId));
+
+      return $entry;
+    });
   }
+
+
+
+
   public function update(DataEntryRequest $request, CreateDataEntryDto $dto, ?int $userId)
   {
     return DB::transaction(function () use ($request, $dto, $userId) {
@@ -73,25 +125,33 @@ class DataEntryService
 
       $entry = $this->entries->findForProjectOrFail($entryId, $projectId);
 
-      if ($entry->status === "published") {
-        throw new DomainException("Cannot update published entry.");
-      }
-
       $dto->values = $this->mergeFiles->execute($dto->values, $request->filesInput(), $projectId, $dataTypeId);
 
       $dto->scheduled_at = $this->normalizeScheduledAt->execute($dto->scheduled_at, $dto->status);
 
-      $this->validateFields->execute($dataTypeId, $dto->values);
+      $enforceRequired = !$request->isMethod('patch');
+      $this->validateFields->execute($dataTypeId, $dto->values, $enforceRequired);
 
-      $this->resolveState->execute($entry, $dto->status, $dto->scheduled_at);
+      if ($request->filled('status')) {
+        $this->resolveState->execute($entry, $dto->status, $dto->scheduled_at);
+      }
 
-      $this->deleteValues->execute($entryId);
+      if ($request->isMethod('patch')) {
+        if (!empty($dto->values)) {
+          $this->values->replacePartial($entryId, $dataTypeId, $dto->values);
+        }
+      } else {
+        $this->deleteValues->execute($entryId);
+        $this->insertValues->execute($entryId, $dataTypeId, $dto->values);
+      }
 
-      $this->insertValues->execute($entryId, $dataTypeId, $dto->values);
+      if ($request->filled('seo')) {
+        $this->handleSeo->execute($entryId, $dto->seo, $dto->values);
+      }
 
-      $this->handleSeo->execute($entryId, $dto->seo, $dto->values);
-
-      $this->handleRelations->execute($entryId, $dataTypeId, $projectId, $dto->relations);
+      if ($request->filled('relations')) {
+        $this->handleRelations->execute($entryId, $dataTypeId, $projectId, $dto->relations);
+      }
 
       $entry->load('values');
 
