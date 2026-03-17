@@ -9,6 +9,7 @@ use App\Http\Controllers\EntryDetailController;
 use App\Http\Controllers\EntryVersionController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\ProjectAccessController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -80,207 +81,208 @@ Route::middleware(['resolve.project', 'auth.user'])->group(function () {
   Route::get('/projects', [ProjectController::class, 'index']);
   Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
   // Route::get('/entries/{id}', [EntryDetailController::class, 'show']);
+  Route::post('/check-project-access', [ProjectAccessController::class, 'check']);
 });
 
 
-  /*
+/*
     |--------------------------------------------------------------------------
     | Entries
     |--------------------------------------------------------------------------
     */
 
-  Route::get('/entries/{entry:slug}', [EntryDetailController::class, 'show']);
+Route::get('/entries/{entry:slug}', [EntryDetailController::class, 'show']);
 
-  Route::get('/entries/{entrySlug}/versions', [
-    EntryVersionController::class,
-    'index'
-  ]);
+Route::get('/entries/{entrySlug}/versions', [
+  EntryVersionController::class,
+  'index'
+]);
 
-  Route::delete('/entries/{entry:slug}', [
-    DataEntryController::class,
-    'destroy'
-  ]);
+Route::delete('/entries/{entry:slug}', [
+  DataEntryController::class,
+  'destroy'
+]);
 
-  Route::get(
-    '/entries/{entry:slug}/with-relations',
-    [EntryDetailController::class, 'showwithrelation']
-  );
+Route::get(
+  '/entries/{entry:slug}/with-relations',
+  [EntryDetailController::class, 'showwithrelation']
+);
 
-  Route::get(
-    '/entries/{entry:slug}/same-type',
-    [EntryDetailController::class, 'showwithsametype']
-  );
+Route::get(
+  '/entries/{entry:slug}/same-type',
+  [EntryDetailController::class, 'showwithsametype']
+);
 
-  Route::post(
-    '/entries/{entry:slug}/publish',
-    DataEntryPublishController::class
-  );
+Route::post(
+  '/entries/{entry:slug}/publish',
+  DataEntryPublishController::class
+);
 
 
-  /*
+/*
     |--------------------------------------------------------------------------
     | Data Entries
     |--------------------------------------------------------------------------
     */
 
-  Route::post(
-    '/data-types/{dataType:slug}/entries',
-    [DataEntryController::class, 'store']
-  );
+Route::post(
+  '/data-types/{dataType:slug}/entries',
+  [DataEntryController::class, 'store']
+);
 
-  Route::put(
-    '/data-types/{dataType:slug}/entries/{entry:slug}',
-    [DataEntryController::class, 'update']
-  );
+Route::put(
+  '/data-types/{dataType:slug}/entries/{entry:slug}',
+  [DataEntryController::class, 'update']
+);
 
-  Route::patch(
-    '/data-types/{dataType:slug}/entries/{entry:slug}',
-    [DataEntryController::class, 'update']
-  );
+Route::patch(
+  '/data-types/{dataType:slug}/entries/{entry:slug}',
+  [DataEntryController::class, 'update']
+);
 
-  Route::delete(
-    '/data-types/{dataType:slug}/entries/{entry:slug}',
-    [DataEntryController::class, 'destroyByType']
-  );
+Route::delete(
+  '/data-types/{dataType:slug}/entries/{entry:slug}',
+  [DataEntryController::class, 'destroyByType']
+);
 
-  Route::post(
-    '/data-entries/versions/{version}/restore',
-    [DataEntryController::class, 'restore']
-  );
+Route::post(
+  '/data-entries/versions/{version}/restore',
+  [DataEntryController::class, 'restore']
+);
 
 
-  /*
+/*
     |--------------------------------------------------------------------------
     | CMS
     |--------------------------------------------------------------------------
     */
 
-  Route::prefix('cms')->group(function () {
+Route::prefix('cms')->group(function () {
 
-    /*
+  /*
         |--------------------------------------------------------------------------
         | Data Types
         |--------------------------------------------------------------------------
         */
 
-    Route::get('/data-types/trashed', [
-      DataTypeController::class,
-      'trashed'
-    ]);
+  Route::get('/data-types/trashed', [
+    DataTypeController::class,
+    'trashed'
+  ]);
 
-    Route::post('/data-types/{id}/restore', [
-      DataTypeController::class,
-      'restore'
-    ]);
+  Route::post('/data-types/{id}/restore', [
+    DataTypeController::class,
+    'restore'
+  ]);
 
-    Route::delete('/data-types/{id}/force-delete', [
-      DataTypeController::class,
-      'forceDelete'
-    ]);
+  Route::delete('/data-types/{id}/force-delete', [
+    DataTypeController::class,
+    'forceDelete'
+  ]);
 
-    Route::post(
-      '/data-types',
-      [DataTypeController::class, 'store']
-    )->middleware('permission:cms.datatype.create');
+  Route::post(
+    '/data-types',
+    [DataTypeController::class, 'store']
+  )->middleware('permission:cms.datatype.create');
 
-    Route::get('/data-types', [
-      DataTypeController::class,
-      'index'
-    ]);
+  Route::get('/data-types', [
+    DataTypeController::class,
+    'index'
+  ]);
 
-    Route::get('/data-types/{slug}', [
-      DataTypeController::class,
-      'show'
-    ]);
+  Route::get('/data-types/{slug}', [
+    DataTypeController::class,
+    'show'
+  ]);
 
-    Route::put(
-      '/data-types/{dataType}',
-      [DataTypeController::class, 'update']
-    )->middleware('permission:cms.datatype.update');
+  Route::put(
+    '/data-types/{dataType}',
+    [DataTypeController::class, 'update']
+  )->middleware('permission:cms.datatype.update');
 
-    Route::delete(
-      '/data-types/{dataType}',
-      [DataTypeController::class, 'destroy']
-    )->middleware('permission:cms.datatype.delete');
+  Route::delete(
+    '/data-types/{dataType}',
+    [DataTypeController::class, 'destroy']
+  )->middleware('permission:cms.datatype.delete');
 
 
-    /*
+  /*
         |--------------------------------------------------------------------------
         | Fields
         |--------------------------------------------------------------------------
         */
 
-    Route::get(
-      '/data-types/{dataType}/fields/trashed',
-      [FieldController::class, 'trashed']
-    );
+  Route::get(
+    '/data-types/{dataType}/fields/trashed',
+    [FieldController::class, 'trashed']
+  );
 
-    Route::post('/fields/{id}/restore', [
-      FieldController::class,
-      'restore'
-    ]);
+  Route::post('/fields/{id}/restore', [
+    FieldController::class,
+    'restore'
+  ]);
 
-    Route::delete('/fields/{id}/force-delete', [
-      FieldController::class,
-      'forceDelete'
-    ]);
+  Route::delete('/fields/{id}/force-delete', [
+    FieldController::class,
+    'forceDelete'
+  ]);
 
-    Route::post(
-      '/data-types/{dataType}/fields',
-      [FieldController::class, 'store']
-    )->middleware('permission:cms.field.create');
+  Route::post(
+    '/data-types/{dataType}/fields',
+    [FieldController::class, 'store']
+  )->middleware('permission:cms.field.create');
 
-    Route::get(
-      '/data-types/{dataType}/fields',
-      [FieldController::class, 'index']
-    );
+  Route::get(
+    '/data-types/{dataType}/fields',
+    [FieldController::class, 'index']
+  );
 
-    Route::put(
-      '/fields/{field}',
-      [FieldController::class, 'update']
-    )->middleware('permission:cms.field.update');
+  Route::put(
+    '/fields/{field}',
+    [FieldController::class, 'update']
+  )->middleware('permission:cms.field.update');
 
-    Route::delete(
-      '/fields/{field}',
-      [FieldController::class, 'destroy']
-    )->middleware('permission:cms.field.delete');
-  });
+  Route::delete(
+    '/fields/{field}',
+    [FieldController::class, 'destroy']
+  )->middleware('permission:cms.field.delete');
+});
 
 
-  /*
+/*
     |--------------------------------------------------------------------------
     | Permission Test
     |--------------------------------------------------------------------------
     */
 
-  Route::post(
-    '/datatype',
-    [DataTypeController::class, 'store']
-  )->middleware('permission:cms.datatype.create');
+Route::post(
+  '/datatype',
+  [DataTypeController::class, 'store']
+)->middleware('permission:cms.datatype.create');
 // });
 
-  // CRUD
-  Route::post('/data-types/{dataType}/fields', [FieldController::class, 'store']);
-  Route::get('/data-types/{dataType}/fields', [FieldController::class, 'index']);
-  Route::put('/fields/{field}', [FieldController::class, 'update']);
-  Route::delete('/fields/{field}', [FieldController::class, 'destroy']);
+// CRUD
+Route::post('/data-types/{dataType}/fields', [FieldController::class, 'store']);
+Route::get('/data-types/{dataType}/fields', [FieldController::class, 'index']);
+Route::put('/fields/{field}', [FieldController::class, 'update']);
+Route::delete('/fields/{field}', [FieldController::class, 'destroy']);
 
-  // -------------------------
-  // Collections
-  // -------------------------
-  // static
-  Route::get('/collections/{collectionSlug}', [DataCollectionController::class, 'show']);
-  Route::get('/collections/id/{collectionId}', [DataCollectionController::class, 'showById'])->whereNumber('collectionId');
-  Route::post('/collections/{collectionSlug}/insert', [DataCollectionController::class, 'addItems']);
-  Route::delete('/collections/{collectionSlug}/items', [DataCollectionController::class, 'removeItems']);
-  Route::post('/collections/{collectionSlug}/items/reorder', [DataCollectionController::class, 'reorderItems']);
-  Route::get('/collections/{collectionSlug}/entries', [DataCollectionController::class, 'getEntries']);
+// -------------------------
+// Collections
+// -------------------------
+// static
+Route::get('/collections/{collectionSlug}', [DataCollectionController::class, 'show']);
+Route::get('/collections/id/{collectionId}', [DataCollectionController::class, 'showById'])->whereNumber('collectionId');
+Route::post('/collections/{collectionSlug}/insert', [DataCollectionController::class, 'addItems']);
+Route::delete('/collections/{collectionSlug}/items', [DataCollectionController::class, 'removeItems']);
+Route::post('/collections/{collectionSlug}/items/reorder', [DataCollectionController::class, 'reorderItems']);
+Route::get('/collections/{collectionSlug}/entries', [DataCollectionController::class, 'getEntries']);
 
-  // CRUD
-  Route::get('/collections', [DataCollectionController::class, 'index']);
-  Route::post('/collections', [DataCollectionController::class, 'store']);
-  Route::patch('/collections/{collectionSlug}', [DataCollectionController::class, 'update']);
-  Route::delete('/collections/{collectionSlug}', [DataCollectionController::class, 'destroy']);
+// CRUD
+Route::get('/collections', [DataCollectionController::class, 'index']);
+Route::post('/collections', [DataCollectionController::class, 'store']);
+Route::patch('/collections/{collectionSlug}', [DataCollectionController::class, 'update']);
+Route::delete('/collections/{collectionSlug}', [DataCollectionController::class, 'destroy']);
 // });
 
 // -------------------------
