@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domains\CMS\DTOs\Field\CreateFieldDTO;
+use App\Domains\CMS\Read\Services\DataTypeFieldService;
 use App\Domains\CMS\Services\FieldService;
 use App\Domains\CMS\Requests\CreateFieldRequest;
 use App\Models\DataType;
@@ -12,9 +13,11 @@ class FieldController extends Controller
 {
 
   protected $service;
-  public function __construct(FieldService $service)
+  protected $readService;
+  public function __construct(FieldService $service, DataTypeFieldService $readService)
   {
     $this->service = $service;
+    $this->readService = $readService;
   }
 
   public function store(CreateFieldRequest $request, DataType $dataType)
@@ -30,7 +33,7 @@ class FieldController extends Controller
 
   public function index(DataType $dataType)
   {
-    return response()->json($this->service->list($dataType));
+    return response()->json($this->readService->list($dataType));
   }
 
   public function update(CreateFieldRequest $request, DataTypeField $field)
@@ -64,7 +67,7 @@ class FieldController extends Controller
 
   public function trashed(DataType $dataType)
   {
-    $trashed = $this->service->trashed($dataType);
+    $trashed = $this->readService->trashed($dataType);
 
     if ($trashed->isEmpty()) {
       return response()->json([

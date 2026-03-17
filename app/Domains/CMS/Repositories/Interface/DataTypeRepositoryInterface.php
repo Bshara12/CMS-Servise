@@ -14,8 +14,6 @@ interface DataTypeRepositoryInterface
 
   public function findBySlug(string $slug, int $projectId): ?DataType;
 
-  public function list(int $projectId);
-
   public function ensureSlugIsUniqueForUpdate(int $projectId, string $slug, int $ignoreId): void;
 
   public function update(DataType $dataType, UpdateDataTypeDTO $dto): DataType;
@@ -25,6 +23,4 @@ interface DataTypeRepositoryInterface
   public function restore(int $dataTypeId): void;
 
   public function forceDelete(int $dataTypeId): void;
-
-  public function trashed(int $projectId);
 }

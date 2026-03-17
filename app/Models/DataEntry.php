@@ -29,6 +29,7 @@ class DataEntry extends Model
   //     ->firstOrFail();
   // }
 
+  
   public function dataType()
   {
     return $this->belongsTo(DataType::class);
@@ -36,14 +37,13 @@ class DataEntry extends Model
 
   public function values()
   {
-    return $this->hasMany(DataEntryValue::class);
+    return $this->hasMany(DataEntryValue::class, 'data_entry_id');
   }
 
   public function versions()
   {
     return $this->hasMany(DataEntryVersion::class);
   }
-
 
   public function relations()
   {

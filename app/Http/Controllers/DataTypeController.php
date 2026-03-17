@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Domains\CMS\DTOs\DataType\CreateDataTypeDTO;
-use App\Domains\CMS\DTOs\DataType\ShowDataTypeDTOProperities;
 use App\Domains\CMS\DTOs\DataType\UpdateDataTypeDTO;
+use App\Domains\CMS\Read\DTOs\DataType\ShowDataTypeDTOProperities;
+use App\Domains\CMS\Read\Services\DataTypeReadService;
 use App\Domains\CMS\Services\DataTypeService;
 use App\Domains\CMS\Requests\CreateDataTypeRequest;
 use App\Domains\CMS\Requests\UpdateDataTypeRequest;
@@ -15,15 +16,17 @@ class DataTypeController extends Controller
 {
 
   protected $service;
+  protected $readService;
 
-  public function __construct(DataTypeService $service)
+  public function __construct(DataTypeService $service, DataTypeReadService $readService)
   {
     $this->service = $service;
+    $this->readService = $readService;
   }
 
   public function index()
   {
-    $types = $this->service->list();
+    $types = $this->readService->list();
     return response()->json($types);
   }
 
@@ -41,7 +44,7 @@ class DataTypeController extends Controller
   public function show(string $slug)
   {
     $dto = ShowDataTypeDTOProperities::fromRequest($slug);
-    $type = $this->service->findBySlug($dto);
+    $type = $this->readService->findBySlug($dto);
 
     if (!$type) {
       return response()->json(['message' => 'DataType not found'], 404);
@@ -93,7 +96,7 @@ class DataTypeController extends Controller
   public function trashed()
   {
     $project = app('currentProject');
-    $trashed = $this->service->trashed($project->id);
+    $trashed = $this->readService->trashed($project->id);
 
     if ($trashed->isEmpty()) {
       return response()->json([

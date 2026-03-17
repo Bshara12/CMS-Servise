@@ -21,6 +21,11 @@ class EloquentProjectRepository implements ProjectRepositoryInterface
     return $project;
   }
 
+  public function findByKey(string $key): Project
+  {
+    return Project::where('public_id', $key)->firstOrFail();
+  }
+
   public function all(): \Illuminate\Support\Collection
   {
     return Project::query()->latest()->get();

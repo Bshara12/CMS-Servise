@@ -1,12 +1,14 @@
 <?php
 
 use App\Domains\Auth\Service\AuthServiceClient;
+use App\Http\Controllers\DataCollectionController;
 use App\Http\Controllers\DataEntryController;
 use App\Http\Controllers\DataEntryPublishController;
 use App\Http\Controllers\DataTypeController;
 use App\Http\Controllers\EntryDetailController;
 use App\Http\Controllers\EntryVersionController;
 use App\Http\Controllers\FieldController;
+use App\Http\Controllers\OfferController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -77,6 +79,8 @@ Route::middleware(['resolve.project', 'auth.user'])->group(function () {
   Route::get('/projects/{project}', [ProjectController::class, 'show']);
   Route::get('/projects', [ProjectController::class, 'index']);
   Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
+  // Route::get('/entries/{id}', [EntryDetailController::class, 'show']);
+});
 
 
   /*
@@ -253,4 +257,57 @@ Route::middleware(['resolve.project', 'auth.user'])->group(function () {
     '/datatype',
     [DataTypeController::class, 'store']
   )->middleware('permission:cms.datatype.create');
-});
+// });
+
+  // CRUD
+  Route::post('/data-types/{dataType}/fields', [FieldController::class, 'store']);
+  Route::get('/data-types/{dataType}/fields', [FieldController::class, 'index']);
+  Route::put('/fields/{field}', [FieldController::class, 'update']);
+  Route::delete('/fields/{field}', [FieldController::class, 'destroy']);
+
+  // -------------------------
+  // Collections
+  // -------------------------
+  // static
+  Route::get('/collections/{collectionSlug}', [DataCollectionController::class, 'show']);
+  Route::get('/collections/id/{collectionId}', [DataCollectionController::class, 'showById'])->whereNumber('collectionId');
+  Route::post('/collections/{collectionSlug}/insert', [DataCollectionController::class, 'addItems']);
+  Route::delete('/collections/{collectionSlug}/items', [DataCollectionController::class, 'removeItems']);
+  Route::post('/collections/{collectionSlug}/items/reorder', [DataCollectionController::class, 'reorderItems']);
+  Route::get('/collections/{collectionSlug}/entries', [DataCollectionController::class, 'getEntries']);
+
+  // CRUD
+  Route::get('/collections', [DataCollectionController::class, 'index']);
+  Route::post('/collections', [DataCollectionController::class, 'store']);
+  Route::patch('/collections/{collectionSlug}', [DataCollectionController::class, 'update']);
+  Route::delete('/collections/{collectionSlug}', [DataCollectionController::class, 'destroy']);
+// });
+
+// -------------------------
+// Data Entries
+// -------------------------
+// Route::put('/projects/{project}/data-types/{dataType}/entries/{entry}', [DataEntryController::class, 'update']);
+
+
+// Route::post('/projects/{project}/data-types/{dataType}/entries', [DataEntryController::class, 'store']);
+
+// Route::delete('/projects/{project}/data-types/{dataType}/entries/{entry}', [DataEntryController::class, 'destroy']);
+
+// Route::post('/entries/{entry}/publish', DataEntryPublishController::class);
+
+// Route::middleware('auth:sanctum')->group(function () {});
+// Route::post('/data-entries/{id}', [DataEntryController::class, 'update']);
+
+
+// Route::post(
+//   '/data-entries/versions/{version}/restore',
+//   [DataEntryController::class, 'restore']
+// );
+// Route::get(
+//   '/entries/{id}/with-relations',
+//   [EntryDetailController::class, 'showwithrelation']
+// );
+// Route::get(
+//   '/entries/{id}/same-type',
+//   [EntryDetailController::class, 'showwithsametype']
+// );

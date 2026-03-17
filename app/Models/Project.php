@@ -14,6 +14,7 @@ class Project extends Model
   use HasFactory;
   protected $fillable = ['name', 'owner_id', 'supported_languages', 'enabled_modules', 'public_id'];
 
+
   protected $casts = [
     'supported_languages' => 'array',
     'enabled_modules' => 'array',
@@ -36,5 +37,10 @@ class Project extends Model
       $project->slug = Str::slug($project->name);
     });
   }
+  public function collections()
+  {
+    return $this->hasMany(DataCollection::class);
+  }
+
   use TraitsBelongsToProject; // يضمن أي عملية create تحوي project_id
 }

@@ -24,6 +24,6 @@ class DataEntryRelation extends Model
 
   public function dataTypeRelation()
   {
-    return $this->belongsTo(DataTypeRelation::class);
+    return $this->belongsTo(DataTypeRelation::class, 'data_type_relation_id');
   }
 }

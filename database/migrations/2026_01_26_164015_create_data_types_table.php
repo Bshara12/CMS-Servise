@@ -22,6 +22,11 @@ return new class extends Migration
       $table->softDeletes();
       $table->timestamps();
       $table->unique(['project_id', 'slug']);
+      $table->index('project_id');
+      $table->index('is_active');
+      $table->index('slug');
+      $table->index(['project_id', 'slug']);
+      $table->index(['project_id', 'is_active']);
     });
   }
 

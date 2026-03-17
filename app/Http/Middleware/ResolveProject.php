@@ -41,6 +41,7 @@ class ResolveProject
 
     if (!$identifier) {
       abort(400, 'X-Project-Key or X-Project-Id header is required');
+
     }
 
     $project = null;

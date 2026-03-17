@@ -34,4 +34,9 @@ class DataTypeField extends Model
   {
     return $this->belongsTo(DataType::class);
   }
+
+  public function values()
+  {
+    return $this->hasMany(DataEntryValue::class, 'data_type_field_id');
+  }
 }

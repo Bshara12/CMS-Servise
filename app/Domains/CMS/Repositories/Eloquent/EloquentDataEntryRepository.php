@@ -31,11 +31,11 @@ class EloquentDataEntryRepository implements DataEntryRepositoryInterface
   //     ->firstOrFail();
   // }
   public function findForProjectOrFail(int $entryId, int $projectId): DataEntry
-{
+  {
     return DataEntry::where('id', $entryId)
-        ->where('project_id', $projectId)
-        ->firstOrFail();
-}
+      ->where('project_id', $projectId)
+      ->firstOrFail();
+  }
 
   public function updateStatus(int $id, string $status): void
   {
@@ -61,5 +61,48 @@ class EloquentDataEntryRepository implements DataEntryRepositoryInterface
       'updated_by' => $userId,
       'updated_at' => now(),
     ]);
+  }
+
+  public function pluckIdsByProjectTypeAndValues(
+    int $projectId,
+    int $dataTypeId,
+    array $values
+  ): array {
+    if (empty($values)) {
+      return [];
+    }
+
+    return DataEntry::query()
+      ->where('project_id', $projectId)
+      ->where('data_type_id', $dataTypeId)
+      ->whereHas('values', function ($v) use ($values) {
+        $v->whereIn('value', $values);
+      })
+      ->pluck('id')
+      ->toArray();
+  }
+
+  public function pluckIdsForProjectTypeExcluding(
+    int $projectId,
+    int $dataTypeId,
+    array $excludedEntryIds
+  ): array {
+    $query = DataEntry::query()
+      ->where('project_id', $projectId)
+      ->where('data_type_id', $dataTypeId);
+
+    if (!empty($excludedEntryIds)) {
+      $query->whereNotIn('id', $excludedEntryIds);
+    }
+
+    return $query->pluck('id')->toArray();
+  }
+
+  public function pluckIdsForProject(int $projectId): array
+  {
+    return DataEntry::query()
+      ->where('project_id', $projectId)
+      ->pluck('id')
+      ->toArray();
   }
 }

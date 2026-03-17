@@ -6,7 +6,6 @@ use App\Domains\CMS\DTOs\DataType\UpdateDataTypeDTO;
 use App\Domains\CMS\Repositories\Interface\DataTypeRepositoryInterface;
 use App\Domains\Core\Actions\Action;
 use App\Models\DataType;
-use Illuminate\Support\Facades\DB;
 
 class UpdateDataTypeAction extends Action
 {

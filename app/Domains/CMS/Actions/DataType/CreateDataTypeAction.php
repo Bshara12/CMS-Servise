@@ -5,7 +5,6 @@ namespace App\Domains\CMS\Actions\DataType;
 use App\Domains\CMS\DTOs\DataType\CreateDataTypeDTO;
 use App\Domains\CMS\Repositories\Interface\DataTypeRepositoryInterface;
 use App\Domains\Core\Actions\Action;
-use Illuminate\Support\Facades\DB;
 
 class CreateDataTypeAction extends Action
 {

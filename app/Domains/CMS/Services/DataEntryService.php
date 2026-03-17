@@ -13,15 +13,8 @@ use App\Domains\CMS\Actions\data\NormalizeScheduledAtAction;
 use App\Domains\CMS\Actions\data\ResolveStateAction;
 use App\Domains\CMS\Actions\data\ValidateFieldsAction;
 use App\Domains\CMS\DTOs\Data\CreateDataEntryDto;
-use App\Domains\CMS\DTOs\Data\UpdateEntryDTO;
-use App\Domains\CMS\Repositories\Interface\DataEntryRelationRepository;
 use App\Domains\CMS\Repositories\Interface\DataEntryRepositoryInterface;
-use App\Domains\CMS\Repositories\Interface\DataEntryValueRepository;
-use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
-use App\Domains\CMS\Repositories\Interface\SeoEntryRepository;
 use App\Domains\CMS\Requests\DataEntryRequest;
-use App\Domains\CMS\States\DataEntryStateResolver;
-use App\Domains\CMS\StrategyCheck\FieldValidatorResolver;
 use App\Events\EntryChanged;
 use DomainException;
 use Illuminate\Support\Facades\DB;
@@ -30,13 +23,6 @@ class DataEntryService
 {
   public function __construct(
     private DataEntryRepositoryInterface $entries,
-    private DataEntryValueRepository $values,
-    private SeoEntryRepository $seo,
-    private SeoGeneratorService $seoGenerator,
-    private DataEntryStateResolver $stateResolver,
-    private DataEntryRelationRepository $relations,
-    private FieldRepositoryInterface $fieldsRepo,
-    private FieldValidatorResolver $validatorResolver,
     private MergeFilesAction $mergeFiles,
     private NormalizeScheduledAtAction $normalizeScheduledAt,
     private ValidateFieldsAction $validateFields,
