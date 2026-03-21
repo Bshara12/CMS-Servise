@@ -3,6 +3,7 @@
 namespace App\Domains\CMS\Repositories\Eloquent;
 
 use App\Domains\CMS\DTOs\DataCollection\CreateDataCollectionDTO;
+use App\Domains\CMS\DTOs\DataCollection\DeactivateCollectionDTO;
 use App\Domains\CMS\DTOs\DataCollection\UpdateDataCollectionDTO;
 use App\Domains\CMS\Repositories\Interface\DataCollectionRepositoryInterface;
 use App\Models\DataCollection;
@@ -11,6 +12,7 @@ use App\Models\DataEntry;
 use App\Models\DataType;
 use App\Models\DataTypeField;
 use DomainException;
+use PhpParser\ErrorHandler\Collecting;
 
 class DataCollectionRepositoryEloquent implements DataCollectionRepositoryInterface
 {
@@ -78,6 +80,15 @@ class DataCollectionRepositoryEloquent implements DataCollectionRepositoryInterf
   {
     $index = (DataCollectionItem::where('collection_id', $collectionId)->max('sort_order') ?? 0) + 1;
     foreach ($items as $item) {
+
+      $exists = DataCollectionItem::where('collection_id', $collectionId)
+        ->where('item_id', $item)
+        ->exists();
+
+      if ($exists) {
+        continue;
+      }
+
       DataCollectionItem::create([
         'collection_id' => $collectionId,
         'item_id' => $item,
@@ -86,10 +97,11 @@ class DataCollectionRepositoryEloquent implements DataCollectionRepositoryInterf
     }
   }
 
+
   public function removeItems(int $collectionId, array $items): void
   {
     foreach ($items as $item) {
-      $record = DataCollectionItem::where('id', $item)->first();
+      $record = DataCollectionItem::where('item_id', $item)->where('collection_id', $collectionId)->first();
       if (!$record) {
         continue;
       }
@@ -187,5 +199,13 @@ class DataCollectionRepositoryEloquent implements DataCollectionRepositoryInterf
       ];
     }
     return $data;
+  }
+
+  public function deactivate(DeactivateCollectionDTO $dto): void
+  {
+    $collection = DataCollection::where('slug', $dto->slug)->where('project_id', $dto->project_id)->where('is_active', true)->first();
+    if ($collection) {
+      $collection->update(['is_active' => false]);
+    }
   }
 }

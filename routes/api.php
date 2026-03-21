@@ -6,7 +6,6 @@ use App\Http\Controllers\DataEntryPublishController;
 use App\Http\Controllers\DataTypeController;
 use App\Http\Controllers\EntryDetailController;
 use App\Http\Controllers\FieldController;
-use App\Http\Controllers\OfferController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +31,7 @@ Route::middleware('resolve.project')->get('/tenant-test', function () {
 
 Route::middleware('resolve.project')->group(function () {
   // CMS routes لاحقًا
+  Route::get('/projects/resolve', [ProjectController::class, 'resolve']);
   Route::post('/projects/{project}', [ProjectController::class, 'update']);
   Route::get('/projects/{project}', [ProjectController::class, 'show']);
   Route::get('/projects', [ProjectController::class, 'index']);
@@ -76,15 +76,16 @@ Route::middleware('resolve.project')->prefix('cms')->group(function () {
   // Collections
   // -------------------------
   // static
-  Route::get('/collections/{collectionSlug}', [DataCollectionController::class, 'show']);
+  Route::get('/collections', [DataCollectionController::class, 'index']);
   Route::get('/collections/id/{collectionId}', [DataCollectionController::class, 'showById'])->whereNumber('collectionId');
   Route::post('/collections/{collectionSlug}/insert', [DataCollectionController::class, 'addItems']);
   Route::delete('/collections/{collectionSlug}/items', [DataCollectionController::class, 'removeItems']);
   Route::post('/collections/{collectionSlug}/items/reorder', [DataCollectionController::class, 'reorderItems']);
   Route::get('/collections/{collectionSlug}/entries', [DataCollectionController::class, 'getEntries']);
+  Route::patch('/collections/{collectionSlug}/deactivate', [DataCollectionController::class, 'deactivate']);
 
   // CRUD
-  Route::get('/collections', [DataCollectionController::class, 'index']);
+  Route::get('/collections/{collectionSlug}', [DataCollectionController::class, 'show']);
   Route::post('/collections', [DataCollectionController::class, 'store']);
   Route::patch('/collections/{collectionSlug}', [DataCollectionController::class, 'update']);
   Route::delete('/collections/{collectionSlug}', [DataCollectionController::class, 'destroy']);

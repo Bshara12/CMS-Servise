@@ -21,6 +21,28 @@ class ProjectService
     private DeleteProjectAction $deleteAction
   ) {}
 
+  public function resolve($request)
+  {
+    $projectKey = $request->header('X-Project-Id');
+
+    if (!$projectKey) {
+      return response()->json(['message' => 'Project Id is required'], 400);
+    }
+
+    $project = Project::where('public_id', $projectKey)->first();
+
+    if (!$project) {
+      return response()->json(['message' => 'Project not found'], 404);
+    }
+
+    return response()->json([
+      'id' => $project->id,
+      'public_id' => $project->public_id,
+      'name' => $project->name,
+      'owner_id' => $project->owner_id,
+    ]);
+  }
+
   public function create(CreateProjectDTO $dto): Project
   {
     return $this->createProjectAction->execute($dto);

@@ -3,6 +3,7 @@
 namespace App\Domains\CMS\Services;
 
 use App\Domains\CMS\Actions\DataCollection\CreateDataCollectionAction;
+use App\Domains\CMS\Actions\DataCollection\DeactivateCollectionAction;
 use App\Domains\CMS\Actions\DataCollection\DeleteDataCollectionAction;
 use App\Domains\CMS\Actions\DataCollection\DeleteDataCollectionItemsAction;
 use App\Domains\CMS\Actions\DataCollection\GenerateDynamicItemsAction;
@@ -12,6 +13,7 @@ use App\Domains\CMS\Actions\DataCollection\ReOrderCollectionItemsAction;
 use App\Domains\CMS\Actions\DataCollection\UpdateDataCollectionAction;
 use App\Domains\CMS\DTOs\DataCollection\CollectionItemsDTO;
 use App\Domains\CMS\DTOs\DataCollection\CreateDataCollectionDTO;
+use App\Domains\CMS\DTOs\DataCollection\DeactivateCollectionDTO;
 use App\Domains\CMS\Read\Actions\DataCollection\GetCollectionEntriesAction;
 use App\Domains\CMS\Read\Actions\DataCollection\IndexDataCollectionAction;
 use App\Domains\CMS\Read\Actions\DataCollection\ShowDataCollectionDetailsAction;
@@ -31,7 +33,8 @@ class DataCollectionService
     protected RemoveCollectionItemsAction $removeItemsAction,
     protected ReOrderCollectionItemsAction $reOrderItemsAction,
     protected GetCollectionEntriesAction $getEntriesAction,
-    protected ShowDataCollectionDetailsByIdAction $showDetailsByIdAction
+    protected ShowDataCollectionDetailsByIdAction $showDetailsByIdAction,
+    protected DeactivateCollectionAction $deactivateCollection
   ) {}
 
   public function list($projectId)
@@ -93,5 +96,10 @@ class DataCollectionService
   public function getEntries(string $projectKey, string $collectionSlug)
   {
     return $this->getEntriesAction->execute($projectKey, $collectionSlug);
+  }
+
+  public function deactivate(DeactivateCollectionDTO $dto)
+  {
+    $this->deactivateCollection->execute($dto);
   }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Domains\CMS\Repositories\Interface;
 
+use App\Domains\CMS\DTOs\DataCollection\DeactivateCollectionDTO;
 use App\Domains\CMS\DTOs\DataCollection\UpdateDataCollectionDTO;
 use App\Models\DataCollection;
 
@@ -32,8 +33,10 @@ interface DataCollectionRepositoryInterface
   public function removeItems(int $collectionId, array $items): void;
 
   public function reOrderItems(int $collectionId, array $items);
-  
+
   public function getEntries(int $collectionId);
+
+  public function deactivate(DeactivateCollectionDTO $dto): void;
 
   /**
    * @return int[] entry ids inside collection

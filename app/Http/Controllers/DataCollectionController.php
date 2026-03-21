@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Domains\CMS\DTOs\DataCollection\CollectionItemsDTO;
 use App\Domains\CMS\DTOs\DataCollection\CreateDataCollectionDTO;
+use App\Domains\CMS\DTOs\DataCollection\DeactivateCollectionDTO;
 use App\Domains\CMS\DTOs\DataCollection\UpdateDataCollectionDTO;
 use App\Domains\CMS\Services\DataCollectionService;
 use App\Domains\CMS\Requests\CreateDataCollectionRequest;
+use App\Domains\CMS\Requests\DeactivateCollectionRequest;
 use App\Domains\CMS\Requests\InsertCollectionItemsRequest;
 use App\Domains\CMS\Requests\RemoveCollectionItemsRequest;
 use App\Domains\CMS\Requests\ReOrderCollectionItemsRequest;
@@ -129,5 +131,15 @@ class DataCollectionController extends Controller
   {
     $entries = $this->service->getEntries(app('currentProject')->public_id, $collectionSlug);
     return response()->json($entries);
+  }
+
+  public function deactivate($collectionSlug, DeactivateCollectionRequest $request)
+  {
+    $dto = DeactivateCollectionDTO::fromRequest($collectionSlug, $request);
+    $this->service->deactivate($dto);
+
+    return response()->json([
+      'message' => "Collection deactivated successfully"
+    ]);
   }
 }

@@ -20,7 +20,7 @@ class RemoveCollectionItemsRequest extends FormRequest
         'required',
         'integer',
         'distinct',
-        'exists:data_collection_items,id'
+        'exists:data_entries,id'
       ],
     ];
   }

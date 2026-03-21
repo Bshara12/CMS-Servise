@@ -8,9 +8,21 @@ use App\Domains\CMS\Requests\CreateProjectRequest;
 use App\Domains\CMS\Requests\UpdateProjectRequest;
 use App\Domains\CMS\Services\ProjectService;
 use App\Models\Project;
+use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
+
+  protected $service;
+  public function __construct(ProjectService $service)
+  {
+    $this->service = $service;
+  }
+
+  public function resolve(Request $request)
+  {
+    return response()->json($this->service->resolve($request));
+  }
 
   public function store(
     CreateProjectRequest $request,
@@ -22,6 +34,7 @@ class ProjectController extends Controller
 
     return response()->json($project, 201);
   }
+
   public function update(
     UpdateProjectRequest $request,
     Project $project,

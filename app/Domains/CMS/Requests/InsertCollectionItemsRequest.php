@@ -23,10 +23,10 @@ class InsertCollectionItemsRequest extends FormRequest
         'integer',
         'distinct',
         'exists:data_entries,id',
-        Rule::unique('data_collection_items', 'item_id')
-          ->where(function ($query) {
-            return $query->where('collection_id', $this->getCurrentCollectionId());
-          }),
+        // Rule::unique('data_collection_items', 'item_id')
+        //   ->where(function ($query) {
+        //     return $query->where('collection_id', $this->getCurrentCollectionId());
+        //   }),
       ],
     ];
   }
