@@ -13,13 +13,13 @@ class ValidateFieldsAction
     private FieldValidatorResolver $validatorResolver
   ) {}
 
-  public function execute(int $dataTypeId, array $values): void
+  public function execute(int $dataTypeId, array $values, bool $enforceRequired = true): void
   {
     $fields = $this->fieldsRepo->getByDataType($dataTypeId);
 
     foreach ($fields as $slug => $field) {
 
-      if ($field->required && !isset($values[$slug])) {
+      if ($enforceRequired && $field->required && !isset($values[$slug])) {
         throw new DomainException("Field {$slug} is required.");
       }
 

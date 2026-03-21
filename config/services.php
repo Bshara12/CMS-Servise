@@ -33,6 +33,16 @@ return [
     'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
   ],
 
+  'resend' => [
+    'key' => env('RESEND_API_KEY'),
+  ],
+
+  'ses' => [
+    'key' => env('AWS_ACCESS_KEY_ID'),
+    'secret' => env('AWS_SECRET_ACCESS_KEY'),
+    'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+  ],
+
   'slack' => [
     'notifications' => [
       'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
@@ -40,4 +50,13 @@ return [
     ],
   ],
 
+  'rabbitmq' => [
+    'host' => env('RABBITMQ_HOST'),
+    'port' => env('RABBITMQ_PORT'),
+    'user' => env('RABBITMQ_USER'),
+    'password' => env('RABBITMQ_PASSWORD'),
+  ],
+  'auth_service' => [
+    'url' => env('AUTH_SERVICE_URL')
+  ],
 ];

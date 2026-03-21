@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Domains\Auth\Repository\Elequment\ProjectUserRepository;
+use App\Domains\Auth\Repository\Interface\ProjectUserRepositoryInterface;
 use App\Domains\CMS\Read\Repositories\EntryReadRepository;
 use App\Domains\CMS\Read\Repositories\EntryReadRepositoryInterface;
+use App\Domains\CMS\Read\Repositories\EntryVersionReadRepository;
+use App\Domains\CMS\Read\Repositories\EntryVersionReadRepositoryInterface;
 use App\Domains\CMS\Repositories\Eloquent\DataCollectionRepositoryEloquent;
 use App\Domains\CMS\Repositories\Interface\DataEntryVersionRepository;
 use App\Domains\CMS\Repositories\Interface\DataEntryRepositoryInterface;
@@ -78,17 +82,25 @@ class AppServiceProvider extends ServiceProvider
       DataEntryRelationRepository::class,
       EloquentDataEntryRelationRepository::class
     );
-      $this->app->bind(
+    $this->app->bind(
       EntryReadRepositoryInterface::class,
       EntryReadRepository::class
     );
 
+    $this->app->bind(
+      EntryVersionReadRepositoryInterface::class,
+      EntryVersionReadRepository::class
+    );
+     $this->app->bind(
+        ProjectUserRepositoryInterface::class,
+        ProjectUserRepository::class
+    );
     // Offers
-    $this->app->bind(OfferRepositoryInterface::class, EloquentOfferRepository::class);
-    $this->app->bind(OfferTargetRepositoryInterface::class, EloquentOfferTargetRepository::class);
-    $this->app->bind(AppliedPriceRepositoryInterface::class, EloquentAppliedPriceRepository::class);
-    $this->app->bind(OfferWriteRepositoryInterface::class, EloquentOfferWriteRepository::class);
-    $this->app->bind(OfferTargetWriteRepositoryInterface::class, EloquentOfferTargetWriteRepository::class);
+    // $this->app->bind(OfferRepositoryInterface::class, EloquentOfferRepository::class);
+    // $this->app->bind(OfferTargetRepositoryInterface::class, EloquentOfferTargetRepository::class);
+    // $this->app->bind(AppliedPriceRepositoryInterface::class, EloquentAppliedPriceRepository::class);
+    // $this->app->bind(OfferWriteRepositoryInterface::class, EloquentOfferWriteRepository::class);
+    // $this->app->bind(OfferTargetWriteRepositoryInterface::class, EloquentOfferTargetWriteRepository::class);
   }
 
   /**

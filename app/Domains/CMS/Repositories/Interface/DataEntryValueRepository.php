@@ -9,6 +9,12 @@ interface DataEntryValueRepository
     int $dataTypeId,
     array $values
   ): void;
+
+  public function replacePartial(
+    int $entryId,
+    int $dataTypeId,
+    array $values
+  ): void;
   public function getForEntry(int $entryId): array;
   public function deleteForEntry(int $entryId): void;
 

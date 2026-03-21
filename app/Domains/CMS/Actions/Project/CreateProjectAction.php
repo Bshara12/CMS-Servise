@@ -19,22 +19,13 @@ class CreateProjectAction extends Action
     private ProjectRepositoryInterface $repository
   ) {}
 
-  // public function execute(CreateProjectDTO $dto): Project
-  // {
-  //   $project = $this->repository->create($dto->toArray());
-
-  // //  $project->users()->attach($dto->ownerId, [
-  // //     'role' => 'owner'
-  // //   ]);
-
-  //   return $project;
-  // }
   public function execute(CreateProjectDTO $dto): Project
   {
     $data = $dto->toArray();
 
     $data['public_id'] = Str::uuid()->toString();
     // أو Str::random(32)
+    $data['slug'] = Str::slug($data['name']);
 
     return $this->repository->create($data);
   }

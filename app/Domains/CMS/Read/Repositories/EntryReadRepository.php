@@ -211,7 +211,8 @@ class EntryReadRepository implements EntryReadRepositoryInterface
           $path = $item->value;
 
           $mediaItems[] = [
-            'url'       => asset($path),
+            'url'       => Storage::disk('supabase')->url($path),
+            // 'url'       => asset($path),
             'name'      => basename($path),
             'extension' => pathinfo($path, PATHINFO_EXTENSION),
           ];
@@ -319,7 +320,7 @@ class EntryReadRepository implements EntryReadRepositoryInterface
             $path = $item->value;
 
             $mediaItems[] = [
-              'url'       => asset($path),
+              'url'       =>Storage::disk('supabase')->url($path),
               'name'      => basename($path),
               'extension' => pathinfo($path, PATHINFO_EXTENSION),
             ];

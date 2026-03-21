@@ -14,9 +14,24 @@ class CreateProjectDTO
 
     public static function fromRequest(CreateProjectRequest $request): self
     {
+        $user = $request->attributes->get('auth_user');
+        $userId = null;
+
+        if (is_array($user) && isset($user['id'])) {
+            $userId = (int) $user['id'];
+        }
+
+        if (is_object($user) && isset($user->id)) {
+            $userId = (int) $user->id;
+        }
+
+        if (!$userId) {
+            abort(401, 'Unauthorized');
+        }
+
         return new self(
             $request->name,
-            $request->owner_id,
+            $userId,
             $request->supported_languages,
             $request->enabled_modules
         );

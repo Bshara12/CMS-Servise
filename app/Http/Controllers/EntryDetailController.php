@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Domains\CMS\Read\Services\EntryReadService;
+use App\Events\SystemLogEvent;
+use App\Events\UserLoggedIn;
+use App\Models\DataEntry;
+use App\Support\CurrentProject;
 use Illuminate\Http\Request;
 
 class EntryDetailController extends Controller
@@ -12,34 +16,45 @@ class EntryDetailController extends Controller
     private EntryReadService $service,
   ) {}
 
-  public function show(Request $request, int $id)
+  public function show(Request $request, DataEntry $entry)
   {
     $lang = $request->query('lang');
 
-    $entry = $this->service->getDetail($id, $lang);
+    $entryDetail = $this->service->getDetail($entry->id, $lang);
 
-    if (!$entry) {
+    if (!$entryDetail) {
       return response()->json([
         'message' => 'Entry not found'
       ], 404);
     }
+    // event log
+    event(new SystemLogEvent(
+      module: 'cms',
+      eventType: 'project_created',
+      userId: auth()->id()??null,
+      entityType: 'project',
+      entityId: CurrentProject::id()
+    ));
 
-    return response()->json($entry);
+
+
+    
+    return response()->json($entryDetail);
   }
 
-  public function showwithrelation(Request $request, int $id)
+  public function showwithrelation(Request $request, DataEntry $entry)
   {
     $lang = $request->query('lang');
 
-    $entry = $this->service->getWithRelations($id, $lang);
+    $entryWithRelations = $this->service->getWithRelations($entry->id, $lang);
 
-    if (!$entry) {
+    if (!$entryWithRelations) {
       return response()->json([
         'message' => 'Entry not found'
       ], 404);
     }
 
-    return response()->json($entry);
+    return response()->json($entryWithRelations);
   }
 
   //   public function showwithsametype(Request $request, int $id)
@@ -56,7 +71,7 @@ class EntryDetailController extends Controller
 
   //     return response()->json($result);
   // }
-  public function showwithsametype(Request $request, int $id)
+  public function showwithsametype(Request $request, DataEntry $entry)
   {
     $lang = $request->query('lang');
     $page = (int) $request->query('page', 1);
@@ -68,7 +83,7 @@ class EntryDetailController extends Controller
     $search = $request->query('search');
 
     $result = $this->service->getSameTypeFiltered(
-      entryId: $id,
+      entryId: $entry->id,
       lang: $lang,
       dateFrom: $dateFrom,
       dateTo: $dateTo,
@@ -87,7 +102,7 @@ class EntryDetailController extends Controller
 
     return response()->json($result);
   }
-    public function sameType(Request $request, $entryId)
+  public function sameType(Request $request, $entryId)
   {
     return $this->service->getSameTypeFiltered(
       entryId: $entryId,
