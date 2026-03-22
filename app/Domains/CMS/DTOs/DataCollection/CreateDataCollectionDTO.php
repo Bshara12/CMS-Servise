@@ -17,6 +17,7 @@ class CreateDataCollectionDTO
     public ?string $conditions_logic,
     public ?string $description,
     public bool $is_active,
+    public bool $is_offer,
     public ?array $settings,
   ) {}
 
@@ -36,6 +37,7 @@ class CreateDataCollectionDTO
       conditions_logic: $request->conditions_logic ?? 'and',
       description: $request->description,
       is_active: $request->is_active ?? true,
+      is_offer: $request->is_active ?? false,
       settings: $request->settings,
     );
   }
@@ -52,6 +54,7 @@ class CreateDataCollectionDTO
       'conditions_logic' => $this->conditions_logic,
       'description' => $this->description,
       'is_active' => $this->is_active,
+      'is_offer' => $this->is_offer,
       'settings' => $this->settings,
     ];
   }

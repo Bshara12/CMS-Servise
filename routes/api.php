@@ -85,8 +85,7 @@ Route::middleware('resolve.project')->group(function () {
 });
 
 
-Route::prefix('cms')->middleware(['resolve.project'])->group(function () {
-  // Route::prefix('cms')->middleware(['resolve.project', 'auth.user'])->group(function () {
+Route::prefix('cms')->middleware(['resolve.project', 'auth.user'])->group(function () {
 
   /*
     |--------------------------------------------------------------------------
