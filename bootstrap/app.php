@@ -35,8 +35,4 @@ return Application::configure(basePath: dirname(__DIR__))
   ->withSchedule(function (Schedule $schedule) {
     $schedule->command('app:publish-scheduled-entries')
       ->everyMinute();
-
-    // Offers: static applied_prices recalculation
-    $schedule->command('offers:recalculate-active')
-      ->everyMinute();
   })->create();

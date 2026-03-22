@@ -67,25 +67,26 @@ Route::get('/test-auth', function (AuthServiceClient $auth) {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['resolve.project', 'auth.user'])->group(function () {
-
-  /*
+/*
     |--------------------------------------------------------------------------
     | Projects
     |--------------------------------------------------------------------------
     */
 
-  Route::middleware('resolve.project')->group(function () {
-    // CMS routes لاحقًا
-    Route::get('/projects/resolve', [ProjectController::class, 'resolve']);
-    Route::post('/projects/{project}', [ProjectController::class, 'update']);
-    Route::get('/projects/{project}', [ProjectController::class, 'show']);
-    Route::get('/projects', [ProjectController::class, 'index']);
-    Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
-    // Route::get('/entries/{id}', [EntryDetailController::class, 'show']);
-    Route::post('/check-project-access', [ProjectAccessController::class, 'check']);
-  });
+Route::middleware('resolve.project')->group(function () {
+  // CMS routes لاحقًا
+  Route::get('/projects/resolve', [ProjectController::class, 'resolve']);
+  Route::post('/projects/{project}', [ProjectController::class, 'update']);
+  Route::get('/projects/{project}', [ProjectController::class, 'show']);
+  Route::get('/projects', [ProjectController::class, 'index']);
+  Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
+  // Route::get('/entries/{id}', [EntryDetailController::class, 'show']);
+  Route::post('/check-project-access', [ProjectAccessController::class, 'check']);
+});
 
+
+Route::prefix('cms')->middleware(['resolve.project'])->group(function () {
+  // Route::prefix('cms')->middleware(['resolve.project', 'auth.user'])->group(function () {
 
   /*
     |--------------------------------------------------------------------------
@@ -192,7 +193,7 @@ Route::post(
     |--------------------------------------------------------------------------
     */
 
-Route::prefix('cms')->group(function () {
+Route::prefix('cms')->middleware('resolve.project')->group(function () {
 
   /*
         |--------------------------------------------------------------------------
