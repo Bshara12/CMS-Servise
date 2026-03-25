@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Domains\Auth\Repository\Elequment\ProjectUserRepository;
 use App\Domains\Auth\Repository\Interface\ProjectUserRepositoryInterface;
+use App\Domains\CMS\Read\Repositories\EntryProjectReadRepository;
+use App\Domains\CMS\Read\Repositories\EntryProjectReadRepositoryInterface;
 use App\Domains\CMS\Read\Repositories\EntryReadRepository;
 use App\Domains\CMS\Read\Repositories\EntryReadRepositoryInterface;
 use App\Domains\CMS\Read\Repositories\EntryVersionReadRepository;
@@ -91,9 +93,13 @@ class AppServiceProvider extends ServiceProvider
       EntryVersionReadRepositoryInterface::class,
       EntryVersionReadRepository::class
     );
-     $this->app->bind(
-        ProjectUserRepositoryInterface::class,
-        ProjectUserRepository::class
+    $this->app->bind(
+      ProjectUserRepositoryInterface::class,
+      ProjectUserRepository::class
+    );
+    $this->app->bind(
+      EntryProjectReadRepositoryInterface::class,
+      EntryProjectReadRepository::class
     );
     // Offers
     // $this->app->bind(OfferRepositoryInterface::class, EloquentOfferRepository::class);

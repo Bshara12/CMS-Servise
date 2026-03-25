@@ -27,14 +27,14 @@ class EntryDetailController extends Controller
         'message' => 'Entry not found'
       ], 404);
     }
-    // event log
-    event(new SystemLogEvent(
-      module: 'cms',
-      eventType: 'project_created',
-      userId: auth()->id()??null,
-      entityType: 'project',
-      entityId: CurrentProject::id()
-    ));
+    // // event log
+    // event(new SystemLogEvent(
+    //   module: 'cms',
+    //   eventType: 'project_created',
+    //   userId: auth()->id()??null,
+    //   entityType: 'project',
+    //   entityId: CurrentProject::id()
+    // ));
 
 
 

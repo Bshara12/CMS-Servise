@@ -5,11 +5,13 @@ use App\Http\Controllers\DataCollectionController;
 use App\Http\Controllers\DataEntryController;
 use App\Http\Controllers\DataEntryPublishController;
 use App\Http\Controllers\DataTypeController;
+use App\Http\Controllers\DataTypeEntriesController;
 use App\Http\Controllers\EntryDetailController;
 use App\Http\Controllers\EntryVersionController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\ProjectAccessController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectEntriesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -92,7 +94,7 @@ Route::prefix('cms')->middleware(['resolve.project', 'auth.user'])->group(functi
     | Entries
     |--------------------------------------------------------------------------
     */
-
+  Route::get('/projects/{project}/entries', [ProjectEntriesController::class, 'index']);
   Route::get('/entries/{entry:slug}', [EntryDetailController::class, 'show']);
 
   Route::get('/entries/{entrySlug}/versions', [
@@ -114,7 +116,10 @@ Route::prefix('cms')->middleware(['resolve.project', 'auth.user'])->group(functi
     '/entries/{entry:slug}/same-type',
     [EntryDetailController::class, 'showwithsametype']
   );
-
+  Route::get(
+    '/projects/{project}/data-types/{slug}/entries',
+    [DataTypeEntriesController::class, 'index']
+  );
   Route::post(
     '/entries/{entry:slug}/publish',
     DataEntryPublishController::class

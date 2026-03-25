@@ -6,6 +6,7 @@ use App\Domains\CMS\DTOs\DataType\CreateDataTypeDTO;
 use App\Domains\CMS\DTOs\DataType\UpdateDataTypeDTO;
 use App\Domains\CMS\Repositories\Interface\DataTypeRepositoryInterface;
 use App\Models\DataType;
+use Illuminate\Support\Facades\DB;
 
 class DataTypeRepositoryEloquent implements DataTypeRepositoryInterface
 {
@@ -79,5 +80,15 @@ class DataTypeRepositoryEloquent implements DataTypeRepositoryInterface
   {
     $dataType = DataType::findOrFail($dataTypeId);
     $dataType->forceDelete();
+  }
+
+  // test
+
+  public function getIdBySlugAndProject(string $slug, int $projectId): ?int
+  {
+    return DB::table('data_types')
+      ->where('slug', $slug)
+      ->where('project_id', $projectId)
+      ->value('id');
   }
 }

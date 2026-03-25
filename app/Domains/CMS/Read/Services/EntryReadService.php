@@ -2,16 +2,22 @@
 
 namespace App\Domains\CMS\Read\Services;
 
+use App\Domains\CMS\Read\Actions\GetEntriesByDataTypeSlugAction;
 use App\Domains\CMS\Read\Actions\GetEntriesBySameTypeAction;
 use App\Domains\CMS\Read\Actions\GetEntryDetailAction;
 use App\Domains\CMS\Read\Actions\GetEntryWithRelationsAction;
+use App\Domains\CMS\Read\Actions\GetProjectEntriesAction;
+use App\Domains\CMS\Read\Actions\GetProjectEntriesTreeAction;
 
 class EntryReadService
 {
   public function __construct(
     private GetEntryDetailAction $getEntryDetailAction,
     private GetEntryWithRelationsAction $getEntryWithRelationsAction,
-    private GetEntriesBySameTypeAction $getEntriesBySameTypeAction
+    private GetEntriesBySameTypeAction $getEntriesBySameTypeAction,
+    private GetProjectEntriesAction $getProjectEntriesAction,
+    private GetProjectEntriesTreeAction $getProjectEntriesTreeAction,
+    private GetEntriesByDataTypeSlugAction $getEntriesByDataTypeSlugAction
 
   ) {}
 
@@ -47,17 +53,30 @@ class EntryReadService
     bool $all = false,
     int $page = 1,
     int $perPage = 20
-) {
+  ) {
     return $this->getEntriesBySameTypeAction->execute(
-        $entryId,
-        $lang,
-        $page,
-        $perPage,
-        $all,
-        $dateFrom,
-        $dateTo,
-        $fieldId,
-        $search
+      $entryId,
+      $lang,
+      $page,
+      $perPage,
+      $all,
+      $dateFrom,
+      $dateTo,
+      $fieldId,
+      $search
     );
-}
+  }
+  public function getProjectEntries(int $projectId, array $filters)
+  {
+    return $this->getProjectEntriesAction->execute($projectId, $filters);
+  }
+  public function getProjectEntriesTree(int $projectId, array $filters)
+  {
+    return $this->getProjectEntriesTreeAction->execute($projectId, $filters);
+  }
+  public function getEntriesByDataTypeSlug(int $projectId, string $slug, array $filters)
+  {
+    return $this->getEntriesByDataTypeSlugAction
+      ->execute($projectId, $slug, $filters);
+  }
 }

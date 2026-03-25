@@ -23,4 +23,8 @@ interface DataTypeRepositoryInterface
   public function restore(int $dataTypeId): void;
 
   public function forceDelete(int $dataTypeId): void;
+
+  // for get entry by slug data type
+  public function getIdBySlugAndProject(string $slug, int $projectId): ?int;
+
 }
