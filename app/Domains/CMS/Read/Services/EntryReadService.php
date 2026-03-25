@@ -8,6 +8,7 @@ use App\Domains\CMS\Read\Actions\GetEntryDetailAction;
 use App\Domains\CMS\Read\Actions\GetEntryWithRelationsAction;
 use App\Domains\CMS\Read\Actions\GetProjectEntriesAction;
 use App\Domains\CMS\Read\Actions\GetProjectEntriesTreeAction;
+use App\Models\DataEntry;
 
 class EntryReadService
 {
@@ -78,5 +79,11 @@ class EntryReadService
   {
     return $this->getEntriesByDataTypeSlugAction
       ->execute($projectId, $slug, $filters);
+  }
+  public function showMany($ids)
+  {
+    return DataEntry::with('values')
+      ->whereIn('id', $ids)
+      ->get();
   }
 }
