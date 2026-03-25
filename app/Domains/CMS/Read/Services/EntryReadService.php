@@ -5,6 +5,7 @@ namespace App\Domains\CMS\Read\Services;
 use App\Domains\CMS\Read\Actions\GetEntriesBySameTypeAction;
 use App\Domains\CMS\Read\Actions\GetEntryDetailAction;
 use App\Domains\CMS\Read\Actions\GetEntryWithRelationsAction;
+use App\Models\DataEntry;
 
 class EntryReadService
 {
@@ -47,17 +48,24 @@ class EntryReadService
     bool $all = false,
     int $page = 1,
     int $perPage = 20
-) {
+  ) {
     return $this->getEntriesBySameTypeAction->execute(
-        $entryId,
-        $lang,
-        $page,
-        $perPage,
-        $all,
-        $dateFrom,
-        $dateTo,
-        $fieldId,
-        $search
+      $entryId,
+      $lang,
+      $page,
+      $perPage,
+      $all,
+      $dateFrom,
+      $dateTo,
+      $fieldId,
+      $search
     );
-}
+  }
+
+  public function showMany($ids)
+  {
+    return DataEntry::with('values')
+      ->whereIn('id', $ids)
+      ->get();
+  }
 }

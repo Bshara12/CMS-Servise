@@ -94,6 +94,7 @@ Route::prefix('cms')->middleware(['resolve.project', 'auth.user'])->group(functi
     */
 
   Route::get('/entries/{entry:slug}', [EntryDetailController::class, 'show']);
+  Route::post('/entries/bulk', [EntryDetailController::class, 'showMany']);
 
   Route::get('/entries/{entrySlug}/versions', [
     EntryVersionController::class,

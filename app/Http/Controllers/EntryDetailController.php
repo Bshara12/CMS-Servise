@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Domains\CMS\Read\Services\EntryReadService;
 use App\Events\SystemLogEvent;
-use App\Events\UserLoggedIn;
 use App\Models\DataEntry;
 use App\Support\CurrentProject;
 use Illuminate\Http\Request;
@@ -31,14 +30,14 @@ class EntryDetailController extends Controller
     event(new SystemLogEvent(
       module: 'cms',
       eventType: 'project_created',
-      userId: auth()->id()??null,
+      userId: auth()->id() ?? null,
       entityType: 'project',
       entityId: CurrentProject::id()
     ));
 
 
 
-    
+
     return response()->json($entryDetail);
   }
 
@@ -114,5 +113,11 @@ class EntryDetailController extends Controller
       page: $request->input('page', 1),
       perPage: $request->input('per_page', 20)
     );
+  }
+
+  public function showMany(Request $request)
+  {
+    $ids = (array) $request->ids;
+    return $this->service->showMany($ids);
   }
 }
