@@ -40,6 +40,7 @@ class ProjectService
       'public_id' => $project->public_id,
       'name' => $project->name,
       'owner_id' => $project->owner_id,
+      'enabled_modules'=> $project->enabled_modules,
     ]);
   }
 
