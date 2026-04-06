@@ -38,4 +38,7 @@ interface DataEntryRepositoryInterface
    * @return int[]
    */
   public function pluckIdsForProject(int $projectId): array;
+
+
+  public function updateRatingStats(int $id, array $data): void;
 }

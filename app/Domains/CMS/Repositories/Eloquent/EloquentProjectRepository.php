@@ -35,4 +35,18 @@ class EloquentProjectRepository implements ProjectRepositoryInterface
   {
     $project->delete();
   }
+
+  
+  public function findById(int $id): Project
+  {
+    return Project::findOrFail($id);
+  }
+
+  public function updateRatingStats(int $id, array $data): void
+  {
+    Project::where('id', $id)->update([
+      'ratings_count' => $data['ratings_count'],
+      'ratings_avg' => $data['ratings_avg'],
+    ]);
+  }
 }

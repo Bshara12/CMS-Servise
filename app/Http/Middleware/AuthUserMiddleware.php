@@ -9,6 +9,7 @@ class AuthUserMiddleware
 {
     public function handle($request, Closure $next)
     {
+      
         $token = $request->bearerToken();
 
         if (!$token) {

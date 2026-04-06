@@ -12,6 +12,7 @@ use App\Http\Controllers\FieldController;
 use App\Http\Controllers\ProjectAccessController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectEntriesController;
+use App\Http\Controllers\RatingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -325,6 +326,15 @@ Route::post('/collections', [DataCollectionController::class, 'store']);
 Route::patch('/collections/{collectionSlug}', [DataCollectionController::class, 'update']);
 Route::delete('/collections/{collectionSlug}', [DataCollectionController::class, 'destroy']);
 // });
+
+
+
+
+// Rate
+Route::post('/ratings', [RatingController::class, 'store'])->middleware('auth.user');
+Route::get('/ratings', [RatingController::class, 'index'])->middleware('auth.user');
+
+
 
 // -------------------------
 // Data Entries
