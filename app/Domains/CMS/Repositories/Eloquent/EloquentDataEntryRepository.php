@@ -105,4 +105,13 @@ class EloquentDataEntryRepository implements DataEntryRepositoryInterface
       ->pluck('id')
       ->toArray();
   }
+
+  
+  public function updateRatingStats(int $id, array $data): void
+  {
+    DataEntry::where('id', $id)->update([
+      'ratings_count' => $data['ratings_count'],
+      'ratings_avg' => $data['ratings_avg'],
+    ]);
+  }
 }

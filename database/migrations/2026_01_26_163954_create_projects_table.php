@@ -16,9 +16,12 @@ return new class extends Migration
       $table->string('public_id', 36)->unique();
       $table->string('slug')->unique();
       $table->string('name');
-      $table->foreignId('owner_id')->constrained('users'); 
+      $table->foreignId('owner_id')->constrained('users');
       $table->json('supported_languages')->nullable();
       $table->json('enabled_modules')->nullable();
+      // ⭐ ratings (إضافة جديدة)
+      $table->unsignedInteger('ratings_count')->default(0);
+      $table->decimal('ratings_avg', 3, 2)->default(0);
       $table->softDeletes();
       $table->timestamps();
     });

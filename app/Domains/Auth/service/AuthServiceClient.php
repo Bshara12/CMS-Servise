@@ -29,4 +29,11 @@ class AuthServiceClient
 
     return $user;
   }
+
+  public function getUsersByIds(array $ids)
+  {
+    return Http::post($this->baseUrl . '/users/bulk', [
+      'ids' => $ids
+    ])->json();
+  }
 }

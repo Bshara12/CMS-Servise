@@ -23,14 +23,17 @@ use App\Domains\CMS\Repositories\Interface\DataEntryValueRepository;
 use App\Domains\CMS\Repositories\Eloquent\DataTypeRepositoryEloquent;
 use App\Domains\CMS\Repositories\Eloquent\EloquentDataEntryRelationRepository;
 use App\Domains\CMS\Repositories\Eloquent\FieldRepositoryEloquent;
+use App\Domains\CMS\Repositories\Eloquent\RatingRepository;
 use App\Domains\CMS\Repositories\Interface\DataCollectionRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\DataEntryRelationRepository;
 use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\ProjectRepositoryInterface;
+use App\Domains\CMS\Repositories\Interface\RatingRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\SeoEntryRepository;
 use App\Domains\Payment\Repositories\EloquentPaymentRepository;
 use App\Domains\Payment\Repositories\PaymentRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -93,6 +96,11 @@ class AppServiceProvider extends ServiceProvider
       EntryProjectReadRepositoryInterface::class,
       EntryProjectReadRepository::class
     );
+    $this->app->bind(
+      RatingRepositoryInterface::class,
+      RatingRepository::class
+    );
+
     // Offers
     // $this->app->bind(OfferRepositoryInterface::class, EloquentOfferRepository::class);
     // $this->app->bind(OfferTargetRepositoryInterface::class, EloquentOfferTargetRepository::class);
@@ -107,5 +115,9 @@ class AppServiceProvider extends ServiceProvider
   public function boot(): void
   {
     //
+    Relation::enforceMorphMap([
+      'project' => \App\Models\Project::class,
+      'data' => \App\Models\DataEntry::class,
+    ]);
   }
 }

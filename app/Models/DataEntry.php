@@ -29,7 +29,7 @@ class DataEntry extends Model
   //     ->firstOrFail();
   // }
 
-  
+
   public function dataType()
   {
     return $this->belongsTo(DataType::class);
@@ -48,5 +48,10 @@ class DataEntry extends Model
   public function relations()
   {
     return $this->hasMany(DataEntryRelation::class);
+  }
+
+  public function ratings()
+  {
+    return $this->morphMany(Rating::class, 'rateable');
   }
 }

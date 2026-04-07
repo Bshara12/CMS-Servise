@@ -13,6 +13,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProjectAccessController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectEntriesController;
+use App\Http\Controllers\RatingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -328,6 +329,7 @@ Route::delete('/collections/{collectionSlug}', [DataCollectionController::class,
 // });
 
 
+<<<<<<< HEAD
 // -------------------------
 // Payments
 // -------------------------
@@ -340,6 +342,15 @@ Route::middleware(['resolve.project', 'auth.user'])
       ->middleware('permission:payment.refund');
   });
 
+=======
+
+
+// Rate
+Route::post('/ratings', [RatingController::class, 'store'])->middleware('auth.user');
+Route::get('/ratings', [RatingController::class, 'index'])->middleware('auth.user');
+
+
+>>>>>>> 626ab6f7484ba36194a87640b740e1f50169d18c
 
 // -------------------------
 // Data Entries

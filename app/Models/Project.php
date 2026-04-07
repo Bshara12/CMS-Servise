@@ -47,6 +47,9 @@ class Project extends Model
   {
     return $this->hasMany(DataCollection::class);
   }
-
+  public function ratings()
+  {
+    return $this->morphMany(Rating::class, 'rateable');
+  }
   use TraitsBelongsToProject; // يضمن أي عملية create تحوي project_id
 }

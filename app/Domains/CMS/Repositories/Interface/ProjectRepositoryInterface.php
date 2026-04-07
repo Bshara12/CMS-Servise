@@ -12,4 +12,8 @@ interface ProjectRepositoryInterface
   public function findByKey(string $key): Project;
   public function all(): \Illuminate\Support\Collection;
   public function delete(Project $project): void;
+
+  // ⭐ جديد
+  public function findById(int $id): Project;
+  public function updateRatingStats(int $id, array $data): void;
 }
