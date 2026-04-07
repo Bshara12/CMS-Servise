@@ -9,6 +9,7 @@ use App\Http\Controllers\DataTypeEntriesController;
 use App\Http\Controllers\EntryDetailController;
 use App\Http\Controllers\EntryVersionController;
 use App\Http\Controllers\FieldController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProjectAccessController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectEntriesController;
@@ -325,6 +326,20 @@ Route::post('/collections', [DataCollectionController::class, 'store']);
 Route::patch('/collections/{collectionSlug}', [DataCollectionController::class, 'update']);
 Route::delete('/collections/{collectionSlug}', [DataCollectionController::class, 'destroy']);
 // });
+
+
+// -------------------------
+// Payments
+// -------------------------
+Route::middleware(['resolve.project', 'auth.user'])
+  ->prefix('payments')
+  ->group(function () {
+    Route::post('/pay', [PaymentController::class, 'charge']);
+    Route::post('/installment', [PaymentController::class, 'payInstallment']);
+    Route::post('/refund', [PaymentController::class, 'refund'])
+      ->middleware('permission:payment.refund');
+  });
+
 
 // -------------------------
 // Data Entries

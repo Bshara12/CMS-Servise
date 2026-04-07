@@ -28,16 +28,8 @@ use App\Domains\CMS\Repositories\Interface\DataEntryRelationRepository;
 use App\Domains\CMS\Repositories\Interface\FieldRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\ProjectRepositoryInterface;
 use App\Domains\CMS\Repositories\Interface\SeoEntryRepository;
-use App\Domains\Offers\Repositories\AppliedPriceRepositoryInterface;
-use App\Domains\Offers\Repositories\Eloquent\EloquentAppliedPriceRepository;
-use App\Domains\Offers\Repositories\Eloquent\EloquentOfferRepository;
-use App\Domains\Offers\Repositories\Eloquent\EloquentOfferTargetRepository;
-use App\Domains\Offers\Repositories\Eloquent\EloquentOfferTargetWriteRepository;
-use App\Domains\Offers\Repositories\Eloquent\EloquentOfferWriteRepository;
-use App\Domains\Offers\Repositories\OfferRepositoryInterface;
-use App\Domains\Offers\Repositories\OfferTargetRepositoryInterface;
-use App\Domains\Offers\Repositories\OfferTargetWriteRepositoryInterface;
-use App\Domains\Offers\Repositories\OfferWriteRepositoryInterface;
+use App\Domains\Payment\Repositories\EloquentPaymentRepository;
+use App\Domains\Payment\Repositories\PaymentRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -47,11 +39,11 @@ class AppServiceProvider extends ServiceProvider
    */
   public function register(): void
   {
-    //
     $this->app->bind(DataTypeRepositoryInterface::class, DataTypeRepositoryEloquent::class);
     $this->app->bind(FieldRepositoryInterface::class, FieldRepositoryEloquent::class);
     $this->app->bind(DataEntryRepositoryInterface::class, EloquentDataEntryRepository::class);
     $this->app->bind(DataCollectionRepositoryInterface::class, DataCollectionRepositoryEloquent::class);
+    $this->app->bind(PaymentRepositoryInterface::class, EloquentPaymentRepository::class);
     $this->app->bind(
       ProjectRepositoryInterface::class,
       EloquentProjectRepository::class

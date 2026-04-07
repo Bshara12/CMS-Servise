@@ -12,7 +12,7 @@ class Project extends Model
 {
   use SoftDeletes;
   use HasFactory;
-  protected $fillable = ['name', 'owner_id', 'slug' ,'supported_languages', 'enabled_modules', 'public_id'];
+  protected $fillable = ['name', 'owner_id', 'slug', 'supported_languages', 'enabled_modules', 'public_id'];
 
 
   protected $casts = [
@@ -37,6 +37,12 @@ class Project extends Model
       $project->slug = Str::slug($project->name);
     });
   }
+
+  public function payments()
+  {
+    return $this->hasMany(Payment::class);
+  }
+
   public function collections()
   {
     return $this->hasMany(DataCollection::class);
