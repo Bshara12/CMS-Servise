@@ -19,11 +19,6 @@ class DataEntryValue extends Model
 
   public function field()
   {
-    return $this->belongsTo(DataTypeField::class);
-  }
-
-  public function dataTypeField()
-  {
     return $this->belongsTo(DataTypeField::class, 'data_type_field_id');
   }
 }
