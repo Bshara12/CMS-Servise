@@ -341,6 +341,11 @@ Route::middleware(['resolve.project', 'auth.user'])
       ->middleware('permission:payment.refund');
   });
 
+// تعبئة رصيد — أدمن فقط
+Route::post('/wallet/topup', [PaymentController::class, 'topUp'])
+  ->middleware(['auth.user', 'permission:wallet.topup']);
+
+
 
 
 // Rate

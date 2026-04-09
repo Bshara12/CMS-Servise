@@ -7,25 +7,25 @@ use Closure;
 
 class AuthUserMiddleware
 {
-    public function handle($request, Closure $next)
-    {
-      
-        $token = $request->bearerToken();
+  public function handle($request, Closure $next)
+  {
 
-        if (!$token) {
-            return response()->json([
-                'message' => 'Unauthorized'
-            ], 401);
-        }
+    $token = $request->bearerToken();
 
-        $authClient = app(AuthServiceClient::class);
-
-        $user = $authClient->getUserFromToken($token);
-
-        $request->attributes->set('auth_user', $user);
-
-        return $next($request);
+    if (!$token) {
+      return response()->json([
+        'message' => 'Unauthorized'
+      ], 401);
     }
+
+    $authClient = app(AuthServiceClient::class);
+
+    $user = $authClient->getUserFromToken($token);
+
+    $request->attributes->set('auth_user', $user);
+
+    return $next($request);
+  }
 }
 
 

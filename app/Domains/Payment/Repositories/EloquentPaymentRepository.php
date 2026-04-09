@@ -100,9 +100,9 @@ class EloquentPaymentRepository implements PaymentRepositoryInterface
   // ─── Transaction (Wallet) ─────────────────────────────────────────────────
 
   public function createWalletTransaction(
-    Payment $payment,
+    ?Payment $payment,
     string  $type,
-    int     $fromWalletId,
+    ?int     $fromWalletId,
     int     $toWalletId,
     float   $amount,
     string  $currency,
@@ -110,7 +110,7 @@ class EloquentPaymentRepository implements PaymentRepositoryInterface
     ?int    $installmentNumber,
   ): Transaction {
     return Transaction::create([
-      'payment_id'             => $payment->id,
+      'payment_id'             => $payment?->id,
       'type'                   => $type,
       'payment_method'         => Transaction::METHOD_WALLET,
       'gateway_transaction_id' => null,

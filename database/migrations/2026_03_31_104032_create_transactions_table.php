@@ -12,6 +12,7 @@ return new class extends Migration
       $table->id();
 
       $table->foreignId('payment_id')
+        ->nullable()
         ->constrained('payments')
         ->cascadeOnDelete();
 

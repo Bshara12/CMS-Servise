@@ -35,9 +35,9 @@ interface PaymentRepositoryInterface
 
   // ─── Transaction (Wallet) ─────────────────────────────────────────────────
   public function createWalletTransaction(
-    Payment $payment,
+    ?Payment $payment,
     string  $type,
-    int     $fromWalletId,
+    ?int     $fromWalletId,
     int     $toWalletId,
     float   $amount,
     string  $currency,
