@@ -32,8 +32,19 @@ class AuthServiceClient
 
   public function getUsersByIds(array $ids)
   {
-    return Http::post($this->baseUrl . '/users/bulk', [
-      'ids' => $ids
-    ])->json();
+    $response = Http::post(
+      config('services.auth_service.url') . '/users/by-ids',
+      [
+        'ids' => $ids
+      ]
+    );
+    // $response = Http::get(
+    //   config('services.auth_service.url') . `/profile/$ids`
+    // );
+    if (!$response->successful()) {
+      dd($response->status(), $response->body());
+    }
+
+    return $response->json()['data'];
   }
 }

@@ -331,8 +331,9 @@ Route::delete('/collections/{collectionSlug}', [DataCollectionController::class,
 
 
 // Rate
-Route::post('/ratings', [RatingController::class, 'store'])->middleware('auth.user');
+Route::post('/ratings', [RatingController::class, 'store'])->middleware(['auth.user','resolve.project']);
 Route::get('/ratings', [RatingController::class, 'index'])->middleware('auth.user');
+Route::get('/ratings/stats', [RatingController::class, 'stats'])->middleware('auth.user');
 
 
 

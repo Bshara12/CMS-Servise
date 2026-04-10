@@ -36,7 +36,7 @@ class EloquentProjectRepository implements ProjectRepositoryInterface
     $project->delete();
   }
 
-  
+
   public function findById(int $id): Project
   {
     return Project::findOrFail($id);
@@ -48,5 +48,24 @@ class EloquentProjectRepository implements ProjectRepositoryInterface
       'ratings_count' => $data['ratings_count'],
       'ratings_avg' => $data['ratings_avg'],
     ]);
+  }
+
+  public function getRatingStats(int $id): array
+  {
+    $project = Project::select('ratings_count', 'ratings_avg')
+      ->where('id', $id)
+      ->first();
+
+    if (!$project) {
+      return [
+        'ratings_count' => 0,
+        'ratings_avg' => 0
+      ];
+    }
+
+    return [
+      'ratings_count' => $project->ratings_count,
+      'ratings_avg' => (float) $project->ratings_avg,
+    ];
   }
 }

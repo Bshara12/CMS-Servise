@@ -106,12 +106,32 @@ class EloquentDataEntryRepository implements DataEntryRepositoryInterface
       ->toArray();
   }
 
-  
+
   public function updateRatingStats(int $id, array $data): void
   {
     DataEntry::where('id', $id)->update([
       'ratings_count' => $data['ratings_count'],
       'ratings_avg' => $data['ratings_avg'],
     ]);
+  }
+
+
+  public function getRatingStats(int $id): array
+  {
+    $data = DataEntry::select('ratings_count', 'ratings_avg')
+      ->where('id', $id)
+      ->first();
+
+    if (!$data) {
+      return [
+        'ratings_count' => 0,
+        'ratings_avg' => 0
+      ];
+    }
+
+    return [
+      'ratings_count' => $data->ratings_count,
+      'ratings_avg' => (float) $data->ratings_avg,
+    ];
   }
 }

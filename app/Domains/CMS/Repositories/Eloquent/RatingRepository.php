@@ -45,9 +45,18 @@ class RatingRepository implements RatingRepositoryInterface
       ->first();
   }
 
+  // public function paginateByRateable(string $type, int $id, int $perPage)
+  // {
+  //   return Rating::find() // ⭐ user info
+  //     ->where('rateable_type', $type)
+  //     ->where('rateable_id', $id)
+  //     ->latest()
+  //     ->paginate($perPage);
+  // }
+
   public function paginateByRateable(string $type, int $id, int $perPage)
   {
-    return Rating::find() // ⭐ user info
+    return Rating::query()
       ->where('rateable_type', $type)
       ->where('rateable_id', $id)
       ->latest()

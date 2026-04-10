@@ -16,4 +16,6 @@ interface ProjectRepositoryInterface
   // ⭐ جديد
   public function findById(int $id): Project;
   public function updateRatingStats(int $id, array $data): void;
+
+  public function getRatingStats(int $id): array;
 }

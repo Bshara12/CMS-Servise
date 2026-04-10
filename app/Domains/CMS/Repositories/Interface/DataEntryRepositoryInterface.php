@@ -41,4 +41,6 @@ interface DataEntryRepositoryInterface
 
 
   public function updateRatingStats(int $id, array $data): void;
+
+  public function getRatingStats(int $id): array;
 }
