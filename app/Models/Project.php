@@ -37,6 +37,12 @@ class Project extends Model
       $project->slug = Str::slug($project->name);
     });
   }
+
+  public function payments()
+  {
+    return $this->hasMany(Payment::class);
+  }
+
   public function collections()
   {
     return $this->hasMany(DataCollection::class);

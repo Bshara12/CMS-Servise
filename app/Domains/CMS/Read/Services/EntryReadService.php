@@ -82,7 +82,7 @@ class EntryReadService
   }
   public function showMany($ids)
   {
-    return DataEntry::with('values')
+    return DataEntry::with(['values','values.field'])
       ->whereIn('id', $ids)
       ->get();
   }
