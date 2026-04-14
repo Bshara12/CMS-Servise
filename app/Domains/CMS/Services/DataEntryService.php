@@ -14,8 +14,10 @@ use App\Domains\CMS\Actions\data\ResolveStateAction;
 use App\Domains\CMS\Actions\data\ValidateFieldsAction;
 use App\Domains\CMS\DTOs\Data\CreateDataEntryDto;
 use App\Domains\CMS\Repositories\Interface\DataEntryRepositoryInterface;
+use App\Domains\CMS\Repositories\Interface\DataEntryValueRepository;
 use App\Domains\CMS\Requests\DataEntryRequest;
 use App\Events\EntryChanged;
+use App\Support\CurrentProject;
 use DomainException;
 use Illuminate\Support\Facades\DB;
 
@@ -33,6 +35,7 @@ class DataEntryService
     private ResolveStateAction $resolveState,
     private DeleteDataEntryAction $deleteEntry,
     private CreateDataEntryAction $createAction,
+    private DataEntryValueRepository $datavalue,
 
   ) {}
 
@@ -106,10 +109,14 @@ class DataEntryService
   {
     return DB::transaction(function () use ($request, $dto, $userId) {
       $entryId = $request->entryId();
+
       $projectId = $request->projectId();
-      $dataTypeId = $request->dataTypeId();
+
+      // $dataTypeId = $request->dataTypeId();
+
 
       $entry = $this->entries->findForProjectOrFail($entryId, $projectId);
+      $dataTypeId = $entry->data_type_id;
 
       $dto->values = $this->mergeFiles->execute($dto->values, $request->filesInput(), $projectId, $dataTypeId);
 
@@ -124,7 +131,7 @@ class DataEntryService
 
       if ($request->isMethod('patch')) {
         if (!empty($dto->values)) {
-          $this->values->replacePartial($entryId, $dataTypeId, $dto->values);
+          $this->datavalue->replacePartial($entryId, $dataTypeId, $dto->values);
         }
       } else {
         $this->deleteValues->execute($entryId);

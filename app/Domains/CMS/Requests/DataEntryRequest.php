@@ -52,6 +52,7 @@ class DataEntryRequest extends FormRequest
 
   public function rules(): array
   {
+
     $rules = [
       'values' => [$this->isMethod('patch') ? 'sometimes' : 'required', 'array'],
       'seo' => ['nullable', 'array'],
@@ -72,7 +73,7 @@ class DataEntryRequest extends FormRequest
       $rules['slug'] = [
         'required_without:title',
         'string',
-        Rule::unique('data_entries', 'slug')->where(fn ($q) => $q->where('project_id', $this->projectId())),
+        Rule::unique('data_entries', 'slug')->where(fn($q) => $q->where('project_id', $this->projectId())),
       ];
       $rules['title'] = ['required_without:slug', 'string'];
     }
@@ -97,15 +98,24 @@ class DataEntryRequest extends FormRequest
     return CurrentProject::id();
   }
 
+  // public function dataTypeId(): int
+  // {
+  //   $dataType = $this->route('dataType');
+
+  //   if ($dataType instanceof DataType) {
+  //     return (int) $dataType->id;
+  //   }
+
+  //   return (int) $dataType;
+  // }
+  public function entry(): DataEntry
+  {
+    return $this->route('entry');
+  }
+
   public function dataTypeId(): int
   {
-    $dataType = $this->route('dataType');
-
-    if ($dataType instanceof DataType) {
-      return (int) $dataType->id;
-    }
-
-    return (int) $dataType;
+    return (int) $this->entry()->data_type_id;
   }
   public function filesInput(): array
   {
@@ -114,7 +124,8 @@ class DataEntryRequest extends FormRequest
 
   public function entryId(): int
   {
-    $entry = $this->route('entry');
+    $entryslug = $this->route('entry');
+    $entry = DataEntry::query()->where('slug', $entryslug)->first();
 
     if ($entry instanceof DataEntry) {
       return (int) $entry->id;

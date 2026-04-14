@@ -34,14 +34,16 @@ class EntryDetailController extends Controller
     //   entityType: 'project',
     //   entityId: CurrentProject::id()
     // ));
+
     // event log
-    event(new SystemLogEvent(
-      module: 'cms',
-      eventType: 'project_created',
-      userId: auth()->id() ?? null,
-      entityType: 'project',
-      entityId: CurrentProject::id()
-    ));
+
+    // event(new SystemLogEvent(
+    //   module: 'cms',
+    //   eventType: 'project_created',
+    //   userId: auth()->id() ?? null,
+    //   entityType: 'project',
+    //   entityId: CurrentProject::id()
+    // ));
 
 
 
