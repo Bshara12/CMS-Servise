@@ -18,18 +18,31 @@ class RefundDTO
     public readonly array   $metadata      = [],
   ) {}
 
+  // public static function fromRequest(RefundRequest $request): self
+  // {
+  //   return new self(
+  //     paymentId: (int)   $request->payment_id,
+  //     gateway: $request->gateway,
+  //     amount: (float) $request->amount,
+  //     currency: strtoupper($request->currency),
+  //     reason: $request->reason ?? null,
+  //     transactionId: $request->transaction_id ?? null,
+  //     fromWalletId: $request->from_wallet_id ? (int) $request->from_wallet_id : null,
+  //   );
+  // }
+
+
   public static function fromRequest(RefundRequest $request): self
   {
     return new self(
-      paymentId: (int)   $request->payment_id,
-      gateway: $request->gateway,
+      paymentId: (int) $request->payment_id,
+      gateway: '', // سيتم تعبئته لاحقاً
       amount: (float) $request->amount,
-      currency: strtoupper($request->currency),
+      currency: '', // سيتم تعبئته لاحقاً
       reason: $request->reason ?? null,
-      transactionId: $request->transaction_id ?? null,
-      fromWalletId: $request->from_wallet_id ? (int) $request->from_wallet_id : null,
     );
   }
+
 
   public static function fromArray(array $data): self
   {

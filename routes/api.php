@@ -342,8 +342,8 @@ Route::middleware(['resolve.project', 'auth.user'])
   ->group(function () {
     Route::post('/pay', [PaymentController::class, 'charge']);
     Route::post('/installment', [PaymentController::class, 'payInstallment']);
-    Route::post('/refund', [PaymentController::class, 'refund'])
-      ->middleware('permission:payment.refund');
+    Route::post('/refund', [PaymentController::class, 'refund']);
+      // ->middleware('permission:payment.refund');
   });
 
 // تعبئة رصيد — أدمن فقط
