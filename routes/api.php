@@ -14,6 +14,7 @@ use App\Http\Controllers\ProjectAccessController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectEntriesController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\StockController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -179,10 +180,14 @@ Route::put(
 );
 
 Route::patch(
-  // '/data-entries/{entry:slug}',
-  '/data-types/{dataType:slug}/entries/{entry:slug}',
+
+  '/data-entries/{entry:slug}',
   [DataEntryController::class, 'update']
 )->middleware('resolve.project');
+
+
+Route::post('/stock/decrement', [StockController::class, 'decrement']);
+
 
 Route::delete(
   '/data-types/{dataType:slug}/entries/{entry:slug}',
@@ -338,8 +343,8 @@ Route::middleware(['resolve.project', 'auth.user'])
   ->group(function () {
     Route::post('/pay', [PaymentController::class, 'charge']);
     Route::post('/installment', [PaymentController::class, 'payInstallment']);
-    Route::post('/refund', [PaymentController::class, 'refund'])
-      ->middleware('permission:payment.refund');
+    Route::post('/refund', [PaymentController::class, 'refund']);
+      // ->middleware('permission:payment.refund');
   });
 
 // تعبئة رصيد — أدمن فقط

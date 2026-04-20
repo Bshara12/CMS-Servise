@@ -73,4 +73,17 @@ class Payment extends Model
   {
     return $this->transactions()->latest()->first();
   }
+
+  public function refundedAmount(): float
+  {
+    return $this->transactions()
+      ->where('type', Transaction::TYPE_REFUND)
+      ->where('status', Transaction::STATUS_SUCCESS)
+      ->sum('amount');
+  }
+
+  public function remainingAmount(): float
+  {
+    return $this->amount - $this->refundedAmount();
+  }
 }

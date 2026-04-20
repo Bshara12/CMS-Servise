@@ -109,13 +109,16 @@ class DataEntryService
   {
     return DB::transaction(function () use ($request, $dto, $userId) {
       $entryId = $request->entryId();
-      
+
+
       $projectId = $request->projectId();
-      
-      $dataTypeId = $request->dataTypeId();
+
+      // $dataTypeId = $request->dataTypeId();
+
 
 
       $entry = $this->entries->findForProjectOrFail($entryId, $projectId);
+      $dataTypeId = $entry->data_type_id;
 
       $dto->values = $this->mergeFiles->execute($dto->values, $request->filesInput(), $projectId, $dataTypeId);
 

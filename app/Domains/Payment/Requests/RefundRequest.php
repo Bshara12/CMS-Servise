@@ -15,21 +15,23 @@ class RefundRequest extends FormRequest
   {
     $base = [
       'payment_id'     => ['required', 'integer', 'exists:payments,id'],
-      'gateway'        => ['required', 'string', 'in:stripe,paypal,wallet'],
+      // 'gateway'        => ['required', 'string', 'in:stripe,paypal,wallet'],
       'amount'         => ['required', 'numeric', 'min:0.01'],
-      'currency'       => ['required', 'string', 'size:3'],
+      // 'currency'       => ['required', 'string', 'size:3'],
       'reason'         => ['nullable', 'string', 'max:500'],
     ];
 
     // استرداد gateway يحتاج transaction_id
-    if ($this->input('gateway') !== 'wallet') {
-      $base['transaction_id'] = ['required', 'string'];
-    }
+
+    // if ($this->input('gateway') !== 'wallet') {
+    //   $base['transaction_id'] = ['required', 'string'];
+    // }
 
     // استرداد wallet يحتاج from_wallet_id
-    if ($this->input('gateway') === 'wallet') {
-      $base['to_wallet_number'] = ['required', 'exists:wallets,wallet_number'];
-    }
+
+    // if ($this->input('gateway') === 'wallet') {
+    //   $base['to_wallet_number'] = ['required', 'exists:wallets,wallet_number'];
+    // }
 
     return $base;
   }
