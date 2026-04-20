@@ -52,6 +52,7 @@ class DataEntryRequest extends FormRequest
 
   public function rules(): array
   {
+    
     $rules = [
       'values' => [$this->isMethod('patch') ? 'sometimes' : 'required', 'array'],
       'seo' => ['nullable', 'array'],
@@ -114,7 +115,8 @@ class DataEntryRequest extends FormRequest
 
   public function entryId(): int
   {
-    $entry = $this->route('entry');
+    $entryslug = $this->route('entry');
+    $entry = DataEntry::query()->where('slug',$entryslug)->first();
 
     if ($entry instanceof DataEntry) {
       return (int) $entry->id;

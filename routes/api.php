@@ -172,16 +172,17 @@ Route::delete('/projects/{project}/data-types/{dataType}/entries/{entry}', [Data
 Route::post('/entries/{entry}/publish', DataEntryPublishController::class);
 
 Route::middleware('auth:sanctum')->group(function () {});
-Route::post('/data-entries/{id}', [DataEntryController::class, 'update']);
+// Route::post('/data-entries/{id}', [DataEntryController::class, 'update']);
 Route::put(
   '/data-types/{dataType:slug}/entries/{entry:slug}',
   [DataEntryController::class, 'update']
 );
 
 Route::patch(
+  // '/data-entries/{entry:slug}',
   '/data-types/{dataType:slug}/entries/{entry:slug}',
   [DataEntryController::class, 'update']
-);
+)->middleware('resolve.project');
 
 Route::delete(
   '/data-types/{dataType:slug}/entries/{entry:slug}',
@@ -383,3 +384,10 @@ Route::get('/ratings/stats', [RatingController::class, 'stats'])->middleware('au
 //   '/entries/{id}/same-type',
 //   [EntryDetailController::class, 'showwithsametype']
 // );
+Route::get('/b', function () {
+    return "CMS OK";
+});
+
+Route::get('/test', function () {
+    return gethostname();
+});

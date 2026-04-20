@@ -94,8 +94,9 @@ class DataEntryController extends Controller
   }
 
 
-  public function update(DataEntryRequest $request, DataType $dataType, DataEntry $entry)
+  public function update(DataEntryRequest $request, DataType $dataType, $entryslug)
   {
+    $entry = DataEntry::query()->where('slug',$entryslug)->first();
     $authUser = $request->attributes->get('auth_user');
     $userId = null;
     if (is_array($authUser) && isset($authUser['id'])) {
@@ -105,13 +106,13 @@ class DataEntryController extends Controller
     }
 
     $userId = $userId ?? auth()->id();
-
     $dto = CreateDataEntryDto::fromRequest($request);
     $entry = $this->service->update(
       $request,
       dto: $dto,
       userId: $userId
     );
+    
 
     return response()->json([
       'message' => 'Data updated successfully',
